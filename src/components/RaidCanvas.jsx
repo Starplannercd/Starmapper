@@ -2575,13 +2575,14 @@ function BossElement({ boss, tool, isPlaying, effectTime, onMoveBoss, onRemoveBo
   const imgSiegecrafter  = useImage(BOSS_IMAGES['siegecrafter-blackfuse'])
   const imgOrcImpaled    = useImage(BOSS_IMAGES['orc-impaled'])
   const imgIronJugg      = useImage(BOSS_IMAGES['iron-juggernaut'])
+  const imgGarrosh       = useImage(BOSS_IMAGES['garrosh-hellscream'])
   const imgMap = {
     immerseus: imgImmerseus, 'rook-stonetoe': imgRook, 'he-softfoot': imgHe,
     'sun-tenderheart': imgSun, 'default-add': imgDefaultAdd, norushen: imgNorushen,
     'sha-of-pride': imgShaOfPride, 'sha-of-violence': imgShaOfViolence, 'foul-manifestation': imgFoulManif,
     'dragonmaw-guard': imgDragonmaw, galakras: imgGalakras, 'beachhead-demolisher': imgDemolisher,
     'siegecrafter-blackfuse': imgSiegecrafter, 'orc-impaled': imgOrcImpaled,
-    'iron-juggernaut': imgIronJugg,
+    'iron-juggernaut': imgIronJugg, 'garrosh-hellscream': imgGarrosh,
   }
   const img      = imgMap[boss.type] ?? null
   const isLocked = boss.locked ?? false

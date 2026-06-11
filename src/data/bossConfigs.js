@@ -150,7 +150,11 @@ export const BOSS_CONFIGS = [
     color: '#bb1111',
     icon: null,
     enemyTypeKeys: ['add'],
-    bossSidebarItems: [FOUL_MANIF, DEFAULT_ADD],
+    bossSidebarItems: [
+      { bossType: 'garrosh-hellscream', label: 'Garrosh', img: '/bosses/GarroshHellscream_1.png', color: '#bb1111', bgColor: '#0a0000' },
+      FOUL_MANIF,
+      DEFAULT_ADD,
+    ],
   },
 ]
 

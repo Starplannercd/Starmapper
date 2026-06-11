@@ -16,6 +16,7 @@ export const BOSS_IMAGES = {
   'siegecrafter-blackfuse':'/bosses/SiegecrafterBlackfuse.png',
   'orc-impaled':           '/bosses/orcmaleimpaled03.png',
   'iron-juggernaut':       '/bosses/ironjuggernaut.png',
+  'garrosh-hellscream':    '/bosses/GarroshHellscream_1.png',
 }
 
 const s = (svg) => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
