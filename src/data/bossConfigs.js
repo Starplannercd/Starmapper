@@ -89,7 +89,12 @@ export const BOSS_CONFIGS = [
     color: '#88aa33',
     icon: null,
     enemyTypeKeys: ['add'],
-    bossSidebarItems: [FOUL_MANIF, DEFAULT_ADD],
+    bossSidebarItems: [
+      { bossType: 'orc-impaled',    label: 'Impaled',  img: '/bosses/orcmaleimpaled03.png', color: '#88aa33', bgColor: '#040a00' },
+      { bossType: 'dragonmaw-guard', label: 'D. Guard', img: '/bosses/DragonmawGuard.png',  color: '#cc5500', bgColor: '#100500' },
+      FOUL_MANIF,
+      DEFAULT_ADD,
+    ],
   },
   {
     key: 'malkorok',

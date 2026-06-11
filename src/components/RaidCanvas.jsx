@@ -2573,12 +2573,13 @@ function BossElement({ boss, tool, isPlaying, effectTime, onMoveBoss, onRemoveBo
   const imgGalakras      = useImage(BOSS_IMAGES['galakras'])
   const imgDemolisher    = useImage(BOSS_IMAGES['beachhead-demolisher'])
   const imgSiegecrafter  = useImage(BOSS_IMAGES['siegecrafter-blackfuse'])
+  const imgOrcImpaled    = useImage(BOSS_IMAGES['orc-impaled'])
   const imgMap = {
     immerseus: imgImmerseus, 'rook-stonetoe': imgRook, 'he-softfoot': imgHe,
     'sun-tenderheart': imgSun, 'default-add': imgDefaultAdd, norushen: imgNorushen,
     'sha-of-pride': imgShaOfPride, 'sha-of-violence': imgShaOfViolence, 'foul-manifestation': imgFoulManif,
     'dragonmaw-guard': imgDragonmaw, galakras: imgGalakras, 'beachhead-demolisher': imgDemolisher,
-    'siegecrafter-blackfuse': imgSiegecrafter,
+    'siegecrafter-blackfuse': imgSiegecrafter, 'orc-impaled': imgOrcImpaled,
   }
   const img      = imgMap[boss.type] ?? null
   const isLocked = boss.locked ?? false
