@@ -73,7 +73,11 @@ export const BOSS_CONFIGS = [
     color: '#8899aa',
     icon: null,
     enemyTypeKeys: [],
-    bossSidebarItems: [FOUL_MANIF, DEFAULT_ADD],
+    bossSidebarItems: [
+      { bossType: 'iron-juggernaut', label: 'Juggernaut', img: '/bosses/ironjuggernaut.png', color: '#8899aa', bgColor: '#050810' },
+      FOUL_MANIF,
+      DEFAULT_ADD,
+    ],
   },
   {
     key: 'dark-shaman',

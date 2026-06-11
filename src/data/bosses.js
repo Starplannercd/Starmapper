@@ -15,6 +15,7 @@ export const BOSS_IMAGES = {
   'beachhead-demolisher':  '/bosses/BeachheadDemolisher.png',
   'siegecrafter-blackfuse':'/bosses/SiegecrafterBlackfuse.png',
   'orc-impaled':           '/bosses/orcmaleimpaled03.png',
+  'iron-juggernaut':       '/bosses/ironjuggernaut.png',
 }
 
 const s = (svg) => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
