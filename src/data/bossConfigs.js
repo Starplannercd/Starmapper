@@ -1,0 +1,150 @@
+const DEFAULT_ADD      = { bossType: 'default-add',        label: 'Add',          img: '/bosses/default-add-cutout.png',    color: '#8844cc', bgColor: '#000' }
+const FOUL_MANIF       = { bossType: 'foul-manifestation', label: 'Foul Manif.',  img: '/bosses/FoulManifestation.png',     color: '#aa6622', bgColor: '#100800' }
+
+export const BOSS_CONFIGS = [
+  {
+    key: 'immerseus',
+    label: 'Immerseus',
+    color: '#3399ff',
+    icon: '/bosses/immerseus-cutout.png',
+    enemyTypeKeys: ['add', 'contaminated-puddle'],
+    bossSidebarItems: [
+      { bossType: 'immerseus', label: 'Immerseus', img: '/bosses/immerseus-cutout.png', color: '#3399ff', bgColor: '#040c18', circular: true },
+      FOUL_MANIF,
+      DEFAULT_ADD,
+    ],
+  },
+  {
+    key: 'fallen-protectors',
+    label: 'Fallen Protectors',
+    color: '#c8a55a',
+    icon: '/bosses/rook-stonetoe-cutout.png',
+    enemyTypeKeys: ['mark-of-anguish'],
+    bossSidebarItems: [
+      { bossType: 'rook-stonetoe',   label: 'Rook', img: '/bosses/rook-stonetoe-cutout.png',   color: '#c8a55a', bgColor: '#0a0a0a' },
+      { bossType: 'he-softfoot',     label: 'He',   img: '/bosses/he-softfoot-cutout.png',     color: '#5ac87e', bgColor: '#0a0a0a' },
+      { bossType: 'sun-tenderheart', label: 'Sun',  img: '/bosses/sun-tenderheart-cutout.png', color: '#c85a8f', bgColor: '#0a0a0a' },
+      FOUL_MANIF,
+      DEFAULT_ADD,
+    ],
+  },
+  {
+    key: 'norushen',
+    label: 'Norushen',
+    color: '#9966cc',
+    icon: '/bosses/norushen-cutout.png',
+    enemyTypeKeys: ['add'],
+    bossSidebarItems: [
+      { bossType: 'norushen',       label: 'Norushen',      img: '/bosses/norushen-cutout.png',  color: '#9966cc', bgColor: '#0a0010' },
+      { bossType: 'sha-of-violence', label: 'Sha of Violence', img: '/bosses/ShaofViolence.png', color: '#cc44aa', bgColor: '#0a0010' },
+      FOUL_MANIF,
+      DEFAULT_ADD,
+    ],
+  },
+  {
+    key: 'sha-of-pride',
+    label: 'Sha of Pride',
+    color: '#cc9933',
+    icon: '/bosses/shaboss_pride_1.png',
+    enemyTypeKeys: ['add'],
+    bossSidebarItems: [
+      { bossType: 'sha-of-pride', label: 'Sha of Pride', img: '/bosses/shaboss_pride_1.png', color: '#cc9933', bgColor: '#0a0a00' },
+      FOUL_MANIF,
+      DEFAULT_ADD,
+    ],
+  },
+  {
+    key: 'galakras',
+    label: 'Galakras',
+    color: '#cc5500',
+    icon: null,
+    enemyTypeKeys: ['add'],
+    bossSidebarItems: [
+      { bossType: 'galakras', label: 'Galakras', img: '/bosses/korkronprotodrake.png?v=2', color: '#cc5500', bgColor: '#100500' },
+      { bossType: 'dragonmaw-guard',      label: 'D. Guard',   img: '/bosses/DragonmawGuard.png',     color: '#cc5500', bgColor: '#100500' },
+      { bossType: 'beachhead-demolisher', label: 'Demolisher', img: '/bosses/BeachheadDemolisher.png', color: '#aa7733', bgColor: '#0a0800' },
+      FOUL_MANIF,
+      DEFAULT_ADD,
+    ],
+  },
+  {
+    key: 'iron-juggernaut',
+    label: 'Iron Juggernaut',
+    color: '#8899aa',
+    icon: null,
+    enemyTypeKeys: [],
+    bossSidebarItems: [FOUL_MANIF, DEFAULT_ADD],
+  },
+  {
+    key: 'dark-shaman',
+    label: "Kor'kron Dark Shaman",
+    color: '#556633',
+    icon: null,
+    enemyTypeKeys: ['add'],
+    bossSidebarItems: [FOUL_MANIF, DEFAULT_ADD],
+  },
+  {
+    key: 'general-nazgrim',
+    label: 'General Nazgrim',
+    color: '#88aa33',
+    icon: null,
+    enemyTypeKeys: ['add'],
+    bossSidebarItems: [FOUL_MANIF, DEFAULT_ADD],
+  },
+  {
+    key: 'malkorok',
+    label: 'Malkorok',
+    color: '#8833bb',
+    icon: null,
+    enemyTypeKeys: [],
+    bossSidebarItems: [FOUL_MANIF, DEFAULT_ADD],
+  },
+  {
+    key: 'spoils',
+    label: 'Spoils of Pandaria',
+    color: '#ccaa33',
+    icon: null,
+    enemyTypeKeys: ['add'],
+    bossSidebarItems: [FOUL_MANIF, DEFAULT_ADD],
+  },
+  {
+    key: 'thok',
+    label: 'Thok the Bloodthirsty',
+    color: '#cc3300',
+    icon: null,
+    enemyTypeKeys: ['add'],
+    bossSidebarItems: [FOUL_MANIF, DEFAULT_ADD],
+  },
+  {
+    key: 'siegecrafter',
+    label: 'Siegecrafter Blackfuse',
+    color: '#cc6622',
+    icon: null,
+    enemyTypeKeys: ['add'],
+    bossSidebarItems: [
+      { bossType: 'siegecrafter-blackfuse', label: 'Siegecrafter', img: '/bosses/SiegecrafterBlackfuse.png', color: '#cc6622', bgColor: '#0a0400' },
+      FOUL_MANIF,
+      DEFAULT_ADD,
+    ],
+  },
+  {
+    key: 'paragons',
+    label: 'Paragons of the Klaxxi',
+    color: '#99bb33',
+    icon: null,
+    enemyTypeKeys: [],
+    bossSidebarItems: [FOUL_MANIF, DEFAULT_ADD],
+  },
+  {
+    key: 'garrosh',
+    label: 'Garrosh Hellscream',
+    color: '#bb1111',
+    icon: null,
+    enemyTypeKeys: ['add'],
+    bossSidebarItems: [FOUL_MANIF, DEFAULT_ADD],
+  },
+]
+
+export function getBossConfig(key) {
+  return BOSS_CONFIGS.find(b => b.key === key) ?? BOSS_CONFIGS[0]
+}

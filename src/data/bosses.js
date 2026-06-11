@@ -1,5 +1,21 @@
 export const IMMERSEUS_IMG = '/bosses/immerseus-cutout.png'
 
+export const BOSS_IMAGES = {
+  immerseus:           '/bosses/immerseus-cutout.png',
+  'rook-stonetoe':     '/bosses/rook-stonetoe-cutout.png',
+  'he-softfoot':       '/bosses/he-softfoot-cutout.png',
+  'sun-tenderheart':   '/bosses/sun-tenderheart-cutout.png',
+  'default-add':       '/bosses/default-add-cutout.png',
+  norushen:            '/bosses/norushen-cutout.png',
+  'sha-of-pride':      '/bosses/shaboss_pride_1.png',
+  'sha-of-violence':   '/bosses/ShaofViolence.png',
+  'foul-manifestation':'/bosses/FoulManifestation.png',
+  'dragonmaw-guard':   '/bosses/DragonmawGuard.png',
+  galakras:              '/bosses/korkronprotodrake.png?v=2',
+  'beachhead-demolisher':  '/bosses/BeachheadDemolisher.png',
+  'siegecrafter-blackfuse':'/bosses/SiegecrafterBlackfuse.png',
+}
+
 const s = (svg) => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
 
 export const IMMERSEUS_SVG = s(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240" width="200" height="240">
@@ -29,9 +45,9 @@ export const IMMERSEUS_SVG = s(`<svg xmlns="http://www.w3.org/2000/svg" viewBox=
   </defs>
 
   <!-- Water pool base -->
-  <ellipse cx="100" cy="218" rx="88" ry="20" fill="url(#poolg)" opacity="0.92"/>
-  <ellipse cx="100" cy="216" rx="68" ry="13" fill="#0068d8" opacity="0.55"/>
-  <ellipse cx="100" cy="214" rx="48" ry="8" fill="#40a8ff" opacity="0.30"/>
+  <ellipse cx="100" cy="218" rx="42" ry="10" fill="url(#poolg)" opacity="0.92"/>
+  <ellipse cx="100" cy="216" rx="30" ry="6" fill="#0068d8" opacity="0.55"/>
+  <ellipse cx="100" cy="214" rx="18" ry="4" fill="#40a8ff" opacity="0.30"/>
 
   <!-- Body water column lower -->
   <path d="M58 210 Q46 168 52 126 Q55 108 66 100 Q82 93 100 91 Q118 93 134 100 Q145 108 148 126 Q154 168 142 210 Z" fill="url(#bodyg)"/>
@@ -105,5 +121,5 @@ export const IMMERSEUS_SVG = s(`<svg xmlns="http://www.w3.org/2000/svg" viewBox=
   <ellipse cx="100" cy="80" rx="38" ry="34" fill="none" stroke="#4098ff" stroke-width="1.5" opacity="0.5"/>
 
   <!-- Pool shimmer -->
-  <ellipse cx="100" cy="214" rx="72" ry="15" fill="none" stroke="#40a0ff" stroke-width="1.5" opacity="0.38"/>
+  <ellipse cx="100" cy="214" rx="36" ry="8" fill="none" stroke="#40a0ff" stroke-width="1.5" opacity="0.38"/>
 </svg>`)
