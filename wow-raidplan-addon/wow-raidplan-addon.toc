@@ -1,0 +1,11 @@
+## Interface: 50400
+## Title: Raid Plan Viewer
+## Notes: Syncs raid markers from your web raid plan
+## SavedVariables: RaidPlanViewerDB
+## Version: 1.0.0
+## Author: wow-raidplan
+
+libs\Base64.lua
+libs\Json.lua
+Data.lua
+MarkerSync.lua

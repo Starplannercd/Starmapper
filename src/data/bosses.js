@@ -15,8 +15,17 @@ export const BOSS_IMAGES = {
   'beachhead-demolisher':  '/bosses/BeachheadDemolisher.png',
   'siegecrafter-blackfuse':'/bosses/SiegecrafterBlackfuse.png',
   'orc-impaled':           '/bosses/orcmaleimpaled03.png',
-  'iron-juggernaut':       '/bosses/ironjuggernaut.png',
+  'iron-juggernaut':       '/bosses/IronJuggy.png',
   'garrosh-hellscream':    '/bosses/GarroshHellscream_1.png',
+  'general-nazgrim':       '/bosses/General Nazgrim.png',
+  'naz-mage':              '/bosses/Nazmage.png',
+  'naz-common':            '/bosses/Nazcommon.png',
+  'naz-rogue':             '/bosses/Nazrogue.png',
+  'naz-shaman':            '/bosses/Nazshaman.png',
+  'naz-sniper':            '/bosses/Nazsniper.png',
+  'naz-banner':            '/bosses/Nazbanner.png',
+  'naz-htt':               '/bosses/HealingTide.png',
+  thok:                    '/bosses/thok.png',
 }
 
 const s = (svg) => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`

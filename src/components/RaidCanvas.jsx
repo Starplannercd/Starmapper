@@ -2576,6 +2576,14 @@ function BossElement({ boss, tool, isPlaying, effectTime, onMoveBoss, onRemoveBo
   const imgOrcImpaled    = useImage(BOSS_IMAGES['orc-impaled'])
   const imgIronJugg      = useImage(BOSS_IMAGES['iron-juggernaut'])
   const imgGarrosh       = useImage(BOSS_IMAGES['garrosh-hellscream'])
+  const imgNazgrim       = useImage(BOSS_IMAGES['general-nazgrim'])
+  const imgNazMage       = useImage(BOSS_IMAGES['naz-mage'])
+  const imgNazCommon     = useImage(BOSS_IMAGES['naz-common'])
+  const imgNazRogue      = useImage(BOSS_IMAGES['naz-rogue'])
+  const imgNazShaman     = useImage(BOSS_IMAGES['naz-shaman'])
+  const imgNazSniper     = useImage(BOSS_IMAGES['naz-sniper'])
+  const imgNazBanner     = useImage(BOSS_IMAGES['naz-banner'])
+  const imgNazHTT        = useImage(BOSS_IMAGES['naz-htt'])
   const imgMap = {
     immerseus: imgImmerseus, 'rook-stonetoe': imgRook, 'he-softfoot': imgHe,
     'sun-tenderheart': imgSun, 'default-add': imgDefaultAdd, norushen: imgNorushen,
@@ -2583,6 +2591,10 @@ function BossElement({ boss, tool, isPlaying, effectTime, onMoveBoss, onRemoveBo
     'dragonmaw-guard': imgDragonmaw, galakras: imgGalakras, 'beachhead-demolisher': imgDemolisher,
     'siegecrafter-blackfuse': imgSiegecrafter, 'orc-impaled': imgOrcImpaled,
     'iron-juggernaut': imgIronJugg, 'garrosh-hellscream': imgGarrosh,
+    'general-nazgrim': imgNazgrim,
+    'naz-mage': imgNazMage, 'naz-common': imgNazCommon, 'naz-rogue': imgNazRogue,
+    'naz-shaman': imgNazShaman, 'naz-sniper': imgNazSniper, 'naz-banner': imgNazBanner,
+    'naz-htt': imgNazHTT,
   }
   const img      = imgMap[boss.type] ?? null
   const isLocked = boss.locked ?? false
@@ -3261,7 +3273,7 @@ export default function RaidCanvas({
   onSelectPlayer, onSetSelectedIds, onSelectText,
   onMovePlayer, onMoveSelected, onAddPlayer,
   onAddText, onAddArrow, onAddMarker, onAddBoss,
-  onRemovePlayer, onRemoveArrow, onMoveArrow,
+  onRemovePlayer, onRemoveArrow, onMoveArrow, onUpdateArrow,
   onMoveSwirl, onRemoveSwirl,
   onMoveText, onRemoveText,
   onMoveMarker, onRemoveMarker,
@@ -3711,7 +3723,14 @@ export default function RaidCanvas({
                : tool === 'text'   ? 'text'
                : 'default'
 
-  const ARROW_COLORS = ['#ff4444', '#ffdd44', '#44ddff', '#44ff88', '#ffffff', '#ff88ff', '#ff8844', '#aaaaaa']
+  const ARROW_COLORS = [
+    '#ffffff', '#dddddd', '#aaaaaa', '#666666',
+    '#fff0a0', '#ffdd44', '#ffaa22', '#ff7700',
+    '#ff4444', '#ff1166', '#ff44ff', '#cc44ff',
+    '#8844ff', '#4466ff', '#44aaff', '#44ddff',
+    '#44ff88', '#88ff44', '#00cc44', '#44bb00',
+    '#C79C6E',
+  ]
 
   return (
     <div
@@ -3819,7 +3838,8 @@ export default function RaidCanvas({
               }}
               onContextMenu={e => {
                 e.evt.preventDefault(); e.cancelBubble = true
-                if (!isPlaying) setContextMenu({ type: 'arrow', id: a.id, x: e.evt.clientX, y: e.evt.clientY })
+                if (!isPlaying) setContextMenu({ type: 'arrow', id: a.id, x: e.evt.clientX, y: e.evt.clientY,
+                  color: a.color ?? '#ff4444', dash: a.dash ?? false, strokeWidth: a.strokeWidth ?? 2.5, twoHeaded: a.twoHeaded ?? false })
               }}
             >
               <Arrow
@@ -4570,6 +4590,62 @@ export default function RaidCanvas({
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* ── Arrow right-click menu ── */}
+      {contextMenu?.type === 'arrow' && (
+        <div ref={ctxMenuRef} className="ctx-menu" style={{ left: contextMenu.x + 16, top: contextMenu.y - 8 }}>
+          <div className="ctx-title">
+            Arrow
+            <button className="ctx-close" onClick={() => setContextMenu(null)}>×</button>
+          </div>
+          <div className="ctx-section">
+            <div className="ctx-label">Color</div>
+            <div className="text-color-row" style={{ flexWrap: 'wrap', gap: 4 }}>
+              {ARROW_COLORS.map(c => (
+                <button key={c}
+                  className={`text-color-swatch ${contextMenu.color === c ? 'active' : ''}`}
+                  style={{ background: c }}
+                  onClick={() => { onUpdateArrow(contextMenu.id, { color: c }); setContextMenu(m => ({ ...m, color: c })) }}
+                  title={c}
+                />
+              ))}
+            </div>
+          </div>
+          <div className="ctx-section">
+            <div className="ctx-label">Width</div>
+            <div className="arrow-style-row">
+              {[['Thin', 1.5], ['Normal', 2.5], ['Thick', 4.5]].map(([label, w]) => (
+                <button key={label}
+                  className={`arrow-style-btn ${contextMenu.strokeWidth === w ? 'active' : ''}`}
+                  onClick={() => { onUpdateArrow(contextMenu.id, { strokeWidth: w }); setContextMenu(m => ({ ...m, strokeWidth: w })) }}
+                >{label}</button>
+              ))}
+            </div>
+          </div>
+          <div className="ctx-section">
+            <div className="ctx-label">Line</div>
+            <div className="arrow-style-row">
+              <button className={`arrow-style-btn ${!contextMenu.dash ? 'active' : ''}`}
+                onClick={() => { onUpdateArrow(contextMenu.id, { dash: false }); setContextMenu(m => ({ ...m, dash: false })) }}>Solid</button>
+              <button className={`arrow-style-btn ${contextMenu.dash ? 'active' : ''}`}
+                onClick={() => { onUpdateArrow(contextMenu.id, { dash: true }); setContextMenu(m => ({ ...m, dash: true })) }}>Dashed</button>
+            </div>
+          </div>
+          <div className="ctx-section">
+            <div className="ctx-label">Heads</div>
+            <div className="arrow-style-row">
+              <button className={`arrow-style-btn ${!contextMenu.twoHeaded ? 'active' : ''}`}
+                onClick={() => { onUpdateArrow(contextMenu.id, { twoHeaded: false }); setContextMenu(m => ({ ...m, twoHeaded: false })) }}>→ One</button>
+              <button className={`arrow-style-btn ${contextMenu.twoHeaded ? 'active' : ''}`}
+                onClick={() => { onUpdateArrow(contextMenu.id, { twoHeaded: true }); setContextMenu(m => ({ ...m, twoHeaded: true })) }}>↔ Two</button>
+            </div>
+          </div>
+          <div className="ctx-section">
+            <button className="ctx-canvas-btn" style={{ marginTop: 2, color: '#c84848', borderColor: '#c8484844' }}
+              onClick={() => { onRemoveArrow(contextMenu.id); setContextMenu(null) }}>Delete Arrow</button>
+          </div>
         </div>
       )}
 

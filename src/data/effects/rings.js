@@ -1,0 +1,15 @@
+export const RINGS = [
+  { key: 'pulse',       label: 'Pulse',       emoji: '🟠', desc: 'Orange ring expands and fades' },
+  { key: 'warning',     label: 'Warning',     emoji: '⚠️', desc: 'Red ring flashes urgently' },
+  { key: 'ripple',      label: 'Ripple',      emoji: '🌊', desc: 'Three rings expand like water' },
+  { key: 'orbit',       label: 'Orbit',       emoji: '🔄', desc: 'Dashed ring spins around player' },
+  { key: 'danger',      label: 'Danger',      emoji: '⭕', desc: 'Large pulsing AoE circle' },
+  { key: 'glow',        label: 'Glow',        emoji: '✨', desc: 'Soft class-colour halo' },
+  { key: 'holy',        label: 'Holy',        emoji: '☀️', desc: 'Gold light rays radiate outward' },
+  { key: 'flame',       label: 'Flame',       emoji: '🔥', desc: 'Fire rings pulse at different speeds' },
+  { key: 'shock',       label: 'Shock',       emoji: '⚡', desc: 'Electric lightning arcs outward' },
+  { key: 'arcane',      label: 'Arcane',      emoji: '🔮', desc: 'Purple orbiting arcane rune rings + sparks' },
+  { key: 'nature',      label: 'Nature',      emoji: '🍃', desc: 'Green nature ring, rotating leaves, ground ellipse' },
+  { key: 'necrotic',    label: 'Necrotic',    emoji: '🦴', desc: 'Decaying grey-green rings with drifting spores' },
+  { key: 'combustion',  label: 'Combustion',  emoji: '🌋', desc: 'Triple pulsing fire rings — full body inferno' },
+]

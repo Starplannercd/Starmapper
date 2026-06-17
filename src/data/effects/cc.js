@@ -1,0 +1,15 @@
+export const CC_STATUS = [
+  { key: 'sleep',      label: 'Sleep',      emoji: '💤', desc: "Z's float upward" },
+  { key: 'stun',       label: 'Stun',       emoji: '⭐', desc: 'Stars orbit above' },
+  { key: 'fear',       label: 'Fear',       emoji: '😱', desc: 'Question marks orbit — feared' },
+  { key: 'silence',    label: 'Silence',    emoji: '🔇', desc: 'Silenced — cannot cast' },
+  { key: 'sap',        label: 'Sap',        emoji: '💛', desc: "Gold sparkles — CC'd" },
+  { key: 'froststun',  label: 'Frost CC',   emoji: '❄️', desc: 'Frost stun orbiting above' },
+  { key: 'root',       label: 'Root',       emoji: '🌿', desc: 'Nature roots hold in place' },
+  { key: 'chain',      label: 'Chain',      emoji: '⛓️', desc: 'Gold chain ring — linked' },
+  { key: 'bounce',     label: 'Bounce',     emoji: '↕️', desc: 'Player bobs up and down' },
+  { key: 'shake',      label: 'Shake',      emoji: '💢', desc: 'Rapid shaking — danger' },
+  { key: 'cyclone',    label: 'Cyclone',    emoji: '🌪️', desc: 'Druid cyclone — wind blades spin rapidly' },
+  { key: 'polymorph',  label: 'Polymorph',  emoji: '🐑', desc: 'Magical transformation — rainbow sparkles orbit' },
+  { key: 'banish',     label: 'Banish',     emoji: '🌀', desc: 'Dimensional prison — void rift lines compress inward' },
+]

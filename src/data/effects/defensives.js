@@ -1,0 +1,17 @@
+export const DEFENSIVES = [
+  { key: 'shield',        label: 'Shield',        emoji: '🛡️', desc: 'Golden protective barrier' },
+  { key: 'absorb',        label: 'Absorb',        emoji: '💠', desc: 'Blue absorb shield spins' },
+  { key: 'bubble',        label: 'Bubble',        emoji: '🫧', desc: 'Divine protection bubble glows' },
+  { key: 'divine',        label: 'Div.Shield',    emoji: '🌟', desc: 'Paladin golden impenetrable shield' },
+  { key: 'iceblock',      label: 'Ice Block',     emoji: '🧊', desc: 'Mage frozen in a block of ice' },
+  { key: 'ams',           label: 'AM Shell',      emoji: '🟢', desc: 'DK anti-magic shell — green barrier' },
+  { key: 'barrier',       label: 'Barrier',       emoji: '🌐', desc: 'Transparent dome — Priest Barrier / DK AMZ zone' },
+  { key: 'turtle',        label: 'Turtle',        emoji: '🐢', desc: 'Hunter Aspect of Turtle — shell rings' },
+  { key: 'cloak',         label: 'Cloak',         emoji: '🌑', desc: 'Rogue cloak of shadows / vanish' },
+  { key: 'fade',          label: 'Fade',          emoji: '👻', desc: 'Priest fade — ghostly rings' },
+  { key: 'dispel',        label: 'Dispel',        emoji: '💫', desc: 'Blue sparkles — cleanse/purify' },
+  { key: 'evasion',       label: 'Evasion',       emoji: '💨', desc: 'Rogue evasion — fast silver afterimage rings' },
+  { key: 'metamorphosis', label: 'Metamorphosis', emoji: '😈', desc: 'DH meta — fel green wings + glow' },
+  { key: 'levitate',      label: 'Levitate',      emoji: '🕊️', desc: 'Priest levitate — soft rising white/gold orbs' },
+  { key: 'spiritshift',   label: 'Spirit Walk',   emoji: '🌫️', desc: 'Shaman spirit walk — ghost double rising away' },
+]

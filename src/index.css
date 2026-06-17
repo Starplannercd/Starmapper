@@ -4,3 +4,20 @@
   width: 100%;
   height: 100vh;
 }
+
+/* Viewer scrubber — hide native appearance so custom track/thumb show through */
+.viewer-scrubber {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+.viewer-scrubber::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 1px; height: 1px;
+}
+.viewer-scrubber::-moz-range-thumb {
+  width: 1px; height: 1px;
+  border: none;
+  background: transparent;
+}
+.viewer-scrubber:focus { outline: none; }

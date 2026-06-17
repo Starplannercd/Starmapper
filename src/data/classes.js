@@ -13,17 +13,18 @@ export const ROLE_ICONS = [
   },
   {
     key: 'melee', label: 'Melee', color: '#111111', specs: [],
-    icon: svg('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><circle cx="20" cy="20" r="20" fill="#111111"/><line x1="9" y1="9" x2="31" y2="31" stroke="white" stroke-width="2.5" stroke-linecap="round"/><line x1="14" y1="20" x2="20" y2="14" stroke="white" stroke-width="2.5" stroke-linecap="round"/><circle cx="9" cy="9" r="2.8" fill="white"/><line x1="31" y1="9" x2="9" y2="31" stroke="white" stroke-width="2.5" stroke-linecap="round"/><line x1="20" y1="14" x2="26" y2="20" stroke="white" stroke-width="2.5" stroke-linecap="round"/><circle cx="31" cy="9" r="2.8" fill="white"/></svg>'),
+    icon: svg('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="#111111" stroke="black" stroke-width="4"/><line x1="9" y1="9" x2="31" y2="31" stroke="white" stroke-width="2.5" stroke-linecap="round"/><line x1="14" y1="20" x2="20" y2="14" stroke="white" stroke-width="2.5" stroke-linecap="round"/><circle cx="9" cy="9" r="2.8" fill="white"/><line x1="31" y1="9" x2="9" y2="31" stroke="white" stroke-width="2.5" stroke-linecap="round"/><line x1="20" y1="14" x2="26" y2="20" stroke="white" stroke-width="2.5" stroke-linecap="round"/><circle cx="31" cy="9" r="2.8" fill="white"/></svg>'),
   },
   {
     key: 'ranged', label: 'Caster', color: '#111111', specs: [],
-    icon: svg('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><circle cx="20" cy="20" r="20" fill="#111111"/><path d="M22 6 C10 12 10 28 22 34" fill="none" stroke="white" stroke-width="2.8" stroke-linecap="round"/><line x1="22" y1="6" x2="22" y2="34" stroke="white" stroke-width="1.2"/><line x1="7" y1="20" x2="33" y2="20" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M33 20 L28 17 L28 23 Z" fill="white"/><line x1="9" y1="18" x2="12" y2="20" stroke="white" stroke-width="1.5" stroke-linecap="round"/><line x1="9" y1="22" x2="12" y2="20" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>'),
+    icon: svg('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="#111111" stroke="black" stroke-width="4"/><path d="M22 6 C10 12 10 28 22 34" fill="none" stroke="white" stroke-width="2.8" stroke-linecap="round"/><line x1="22" y1="6" x2="22" y2="34" stroke="white" stroke-width="1.2"/><line x1="7" y1="20" x2="33" y2="20" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M33 20 L28 17 L28 23 Z" fill="white"/><line x1="9" y1="18" x2="12" y2="20" stroke="white" stroke-width="1.5" stroke-linecap="round"/><line x1="9" y1="22" x2="12" y2="20" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>'),
   },
 ]
 
 export const ENEMY_TYPES = [
-  { key: 'add', label: 'Add', color: '#cc3333', isEnemy: true, specs: [], icon: '/icons/add.webp' },
+  { key: 'add', label: 'Add', color: '#9955ee', isEnemy: true, specs: [], icon: '/icons/add.webp' },
   { key: 'contaminated-puddle', label: 'C. Puddle', color: '#44aa44', isEnemy: true, specs: [], icon: '/icons/contaminated-puddle.png' },
+  { key: 'mark-of-anguish', label: 'Mark of Anguish', color: '#cc6622', isEnemy: true, specs: [], icon: '/icons/mark-of-anguish.jpg' },
 ]
 
 export const WOW_CLASSES = [
