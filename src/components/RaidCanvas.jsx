@@ -2584,6 +2584,7 @@ function BossElement({ boss, tool, isPlaying, effectTime, onMoveBoss, onRemoveBo
   const imgNazSniper     = useImage(BOSS_IMAGES['naz-sniper'])
   const imgNazBanner     = useImage(BOSS_IMAGES['naz-banner'])
   const imgNazHTT        = useImage(BOSS_IMAGES['naz-htt'])
+  const imgThok          = useImage(BOSS_IMAGES['thok'])
   const imgMap = {
     immerseus: imgImmerseus, 'rook-stonetoe': imgRook, 'he-softfoot': imgHe,
     'sun-tenderheart': imgSun, 'default-add': imgDefaultAdd, norushen: imgNorushen,
@@ -2595,6 +2596,7 @@ function BossElement({ boss, tool, isPlaying, effectTime, onMoveBoss, onRemoveBo
     'naz-mage': imgNazMage, 'naz-common': imgNazCommon, 'naz-rogue': imgNazRogue,
     'naz-shaman': imgNazShaman, 'naz-sniper': imgNazSniper, 'naz-banner': imgNazBanner,
     'naz-htt': imgNazHTT,
+    thok: imgThok,
   }
   const img      = imgMap[boss.type] ?? null
   const isLocked = boss.locked ?? false
