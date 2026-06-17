@@ -25,7 +25,7 @@ export const BOSS_IMAGES = {
   'naz-sniper':            '/bosses/Nazsniper.png',
   'naz-banner':            '/bosses/Nazbanner.png',
   'naz-htt':               '/bosses/HealingTide.png',
-  thok:                    '/bosses/thok.png',
+  thok:                    '/bosses/thok.png?v=2',
 }
 
 const s = (svg) => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`

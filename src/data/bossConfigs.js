@@ -128,10 +128,10 @@ export const BOSS_CONFIGS = [
     key: 'thok',
     label: 'Thok the Bloodthirsty',
     color: '#cc3300',
-    icon: '/bosses/thok.png',
+    icon: '/bosses/thok.png?v=2',
     enemyTypeKeys: ['add'],
     bossSidebarItems: [
-      { bossType: 'thok', label: 'Thok', img: '/bosses/thok.png', color: '#cc3300', bgColor: '#0a0000' },
+      { bossType: 'thok', label: 'Thok', img: '/bosses/thok.png?v=2', color: '#cc3300', bgColor: '#0a0000' },
       FOUL_MANIF,
       DEFAULT_ADD,
     ],
