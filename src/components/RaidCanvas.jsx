@@ -2428,8 +2428,8 @@ const SWIRL_LAYERS = [
 ]
 
 function SwirlOverlay({ swirl, swirlAngle, beamLen, isPlaying, tool, onMoveSwirl, onRemoveSwirl, onContextMenu }) {
-  // When playing, the angle is driven by swirlAngle (from playT). When paused/stopped,
-  // the swirl stays frozen at a fixed angle so nothing animates on a paused frame.
+  // When playing, the angle is driven by swirlAngle. When paused/stopped the swirl
+  // freezes at a fixed angle so nothing animates while editing a paused frame.
   const angle = isPlaying ? swirlAngle : 0
   const baseAngle  = (swirl.clockwise ? angle : -angle) - 90
   const radLeading = baseAngle * (Math.PI / 180)
@@ -3424,6 +3424,9 @@ export default function RaidCanvas({
   }, [needsAnimClock])
 
   useEffect(() => {
+    // Only run the effect clock during playback. While paused/stopped the frame is a
+    // still image — effects freeze so nothing animates while editing. (In the read-only
+    // viewer isPlaying is always true, so effects animate there as normal.)
     if (!needsAnimClock || !isPlaying) return
     const base = (performance.now() - mountTimeRef.current) / 1000
     let rafStart = null
@@ -3871,9 +3874,8 @@ export default function RaidCanvas({
           ))}
         </Layer>
 
-        {/* Trajectory/motion paths disabled: frames are discrete slides — icons never
-            animate between frames, so no "will be animated" path is shown. */}
-        {false && (keyframes?.length ?? 0) > 1 && (
+        {/* ── Trajectory paths — only the segments adjacent to the active frame ── */}
+        {!isPlaying && (keyframes?.length ?? 0) > 1 && (
           <Layer listening={false}>
             {/* Boss trajectories */}
             {bosses.map(boss => {

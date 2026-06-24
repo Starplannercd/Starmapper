@@ -431,10 +431,12 @@ export default function PlanViewer() {
   // ── Display state ──────────────────────────────────────────────────────
   const safePageIdx    = Math.min(activePageIdx, pages.length - 1)
   const { players, keyframes } = pages[safePageIdx]
-  // currentFrame is round-based — the discrete frame currently shown
+  // frameIndex is floor-based — used for interpolation and override lookups
+  // currentFrame is round-based — used for birth/hide checks and text display
+  const frameIndex   = Math.min(Math.floor(playT), keyframes.length - 2)
   const currentFrame = Math.round(playT)
   const displayKf    = keyframes[Math.min(currentFrame, keyframes.length - 1)] ?? {}
-  const overrideKf   = displayKf   // discrete slides: overrides come from the current frame
+  const overrideKf   = keyframes[frameIndex] ?? {}   // floor-based: overrides stay until the next frame actually begins
   const hiddenPlayerIds = new Set(displayKf._hiddenPlayerIds ?? [])
   if (textsSourceRef.current !== displayKf._texts) {
     textsSourceRef.current = displayKf._texts
@@ -457,8 +459,9 @@ export default function PlanViewer() {
       })
   )
 
-  // Discrete slides: nothing tweens between frames. Positions/bosses/effects come
-  // straight from the current frame (round-based), matching the editor.
+  const frameA    = keyframes[frameIndex] ?? {}
+  const frameB    = keyframes[Math.min(frameIndex + 1, keyframes.length - 1)] ?? frameA
+  const t         = frameB._snap ? 0 : (playT - frameIndex)
   const pageSwaps = pages[safePageIdx].swaps ?? []
 
   function applySwaps(positions, activeSwaps) {
@@ -471,17 +474,51 @@ export default function PlanViewer() {
     }
     return out
   }
-  const rawPos = {}
+  const rawA = {}, rawB = {}
   Object.keys(visiblePlayers).forEach(id => {
-    rawPos[id] = displayKf[id] ?? { x: CANVAS_W / 2, y: CANVAS_H / 2 }
+    rawA[id] = frameA[id] ?? { x: CANVAS_W / 2, y: CANVAS_H / 2 }
+    rawB[id] = frameB[id] ?? rawA[id]
   })
-  const displayPositions = applySwaps(
-    rawPos,
-    pageSwaps.filter(s => s.fromFrame <= currentFrame && (s.toFrame == null || s.toFrame > currentFrame))
-  )
+  const posA = applySwaps(rawA, pageSwaps.filter(s => s.fromFrame <= frameIndex && (s.toFrame == null || s.toFrame > frameIndex)))
+  const posB = applySwaps(rawB, pageSwaps.filter(s => s.fromFrame <= frameIndex + 1 && (s.toFrame == null || s.toFrame > frameIndex + 1)))
 
-  const visibleBosses       = (displayKf._bosses       ?? []).filter(b  => !b.hidden)
-  const visibleFieldEffects = (displayKf._fieldEffects ?? []).filter(fe => !fe.hidden)
+  const displayPositions = {}
+  Object.keys(visiblePlayers).forEach(id => {
+    const a = posA[id] ?? { x: CANVAS_W / 2, y: CANVAS_H / 2 }
+    const b = posB[id] ?? a
+    displayPositions[id] = { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t }
+  })
+
+  const lerpAngle = (a, b, t) => {
+    const diff = ((b - a) % 360 + 540) % 360 - 180
+    return (a + diff * t + 360) % 360
+  }
+  const lerpItems = (listA, listB) => {
+    const mapB = Object.fromEntries((listB ?? []).map(o => [o.id, o]))
+    const useKfBProps = !frameB._snap && currentFrame > frameIndex
+    const fromA = (listA ?? []).filter(o => {
+      if (o.hidden) return false
+      if (useKfBProps && !mapB[o.id]) return false  // removed in kfB — vanish with text
+      return true
+    }).map(o => {
+      const oB = mapB[o.id]
+      if (!oB) return o
+      const base = useKfBProps ? { ...o, ...oB } : o
+      return {
+        ...base,
+        x:        o.x + (oB.x - o.x) * t,
+        y:        o.y + (oB.y - o.y) * t,
+        rotation: (o.rotateSpeed ?? 0) !== 0 ? (o.rotation ?? 0) : lerpAngle(o.rotation ?? 0, oB.rotation ?? 0, t),
+      }
+    })
+    if (useKfBProps) {
+      const inA = new Set((listA ?? []).map(o => o.id))
+      return [...fromA, ...(listB ?? []).filter(o => !o.hidden && !inA.has(o.id))]
+    }
+    return fromA
+  }
+  const visibleBosses       = lerpItems(frameA._bosses,       frameB._bosses)
+  const visibleFieldEffects = lerpItems(frameA._fieldEffects, frameB._fieldEffects)
 
   // globalT is exact elapsed ms since plan start (wraps at loop boundary).
   // Dividing by 1000 gives seconds — used by RaidCanvas for scrubber-accurate beam spin.

@@ -409,7 +409,9 @@ export default function App() {
   const updatePosition = useCallback((id, x, y) => {
     updatePage(p => ({
       ...p,
-      keyframes: p.keyframes.map((kf, i) => i === activeKeyframe ? { ...kf, [id]: { x, y } } : kf),
+      keyframes: p.mode === 'diagram'
+        ? p.keyframes.map(kf => ({ ...kf, [id]: { x, y } }))
+        : p.keyframes.map((kf, i) => i === activeKeyframe ? { ...kf, [id]: { x, y } } : kf),
     }))
   }, [updatePage, activeKeyframe])
 
@@ -1476,10 +1478,42 @@ export default function App() {
   const visibleSwirls   = (displayKf._swirls  ?? []).filter(s  => !s.hidden)
   const visibleMarkers  = (displayKf._markers ?? []).filter(m  => !m.hidden)
 
-  // Discrete slides: bosses/field effects don't tween between frames either — show the
-  // current frame's items as-is whether paused or playing.
-  const visibleBosses       = (displayKf._bosses       ?? []).filter(b  => !b.hidden)
-  const visibleFieldEffects = (displayKf._fieldEffects ?? []).filter(fe => !fe.hidden)
+  // Bosses and field effects interpolate position between keyframes during playback
+  const playFI = isPlaying ? Math.min(Math.floor(playT), keyframes.length - 2) : currentFrame
+  const playFT = isPlaying ? playT - playFI : 0
+  const kfA = keyframes[playFI] ?? {}, kfB = keyframes[playFI + 1] ?? kfA
+  const lerpAngle = (a, b, t) => {
+    const diff = ((b - a) % 360 + 540) % 360 - 180
+    return (a + diff * t + 360) % 360
+  }
+  const lerpItems = (listA, listB) => {
+    const mapB = Object.fromEntries((listB ?? []).map(o => [o.id, o]))
+    // Past the Math.round threshold, non-position props (effect, scale, color…) come from kfB.
+    const useKfBProps = currentFrame > playFI
+    const fromA = (listA ?? []).filter(o => {
+      if (o.hidden) return false
+      if (useKfBProps && !mapB[o.id]) return false  // removed in kfB — vanish with text
+      return true
+    }).map(o => {
+      const oB = mapB[o.id]
+      if (!oB) return o
+      const base = useKfBProps ? { ...o, ...oB } : o
+      return {
+        ...base,
+        x:        o.x + (oB.x - o.x) * playFT,
+        y:        o.y + (oB.y - o.y) * playFT,
+        // Skip rotation lerp for spinning beams — rotateSpeed drives all rotation
+        rotation: (o.rotateSpeed ?? 0) !== 0 ? (o.rotation ?? 0) : lerpAngle(o.rotation ?? 0, oB.rotation ?? 0, playFT),
+      }
+    })
+    if (useKfBProps) {
+      const inA = new Set((listA ?? []).map(o => o.id))
+      return [...fromA, ...(listB ?? []).filter(o => !o.hidden && !inA.has(o.id))]
+    }
+    return fromA
+  }
+  const visibleBosses       = isPlaying ? lerpItems(kfA._bosses,       kfB._bosses)       : (displayKf._bosses       ?? []).filter(b  => !b.hidden)
+  const visibleFieldEffects = isPlaying ? lerpItems(kfA._fieldEffects, kfB._fieldEffects) : (displayKf._fieldEffects ?? []).filter(fe => !fe.hidden)
 
   const visiblePlayers = Object.fromEntries(
     Object.entries(players)
@@ -1505,13 +1539,31 @@ export default function App() {
     return out
   }
 
-  // Frames are discrete slides: icons never tween between frames. Playback just steps
-  // through frames (showing each as a static layout while effects pulse), so positions
-  // come straight from the current frame whether paused or playing — no interpolation.
-  const posFrame = isPlaying ? currentFrame : activeKeyframe
-  const rawPos = keyframes[posFrame] || {}
-  const activeSwaps = pageSwaps.filter(s => s.fromFrame <= posFrame && (s.toFrame == null || s.toFrame > posFrame))
-  const displayPositions = applySwaps(rawPos, activeSwaps)
+  let displayPositions
+  if (!isPlaying) {
+    const raw = keyframes[activeKeyframe] || {}
+    const active = pageSwaps.filter(s => s.fromFrame <= activeKeyframe && (s.toFrame == null || s.toFrame > activeKeyframe))
+    displayPositions = applySwaps(raw, active)
+  } else {
+    const frameIndex = Math.min(Math.floor(playT), keyframes.length - 2)
+    const frameB = keyframes[frameIndex + 1] || keyframes[frameIndex] || {}
+    const t = frameB._snap ? 0 : (playT - frameIndex)
+    const frameA = keyframes[frameIndex] || {}
+    const swapsA = pageSwaps.filter(s => s.fromFrame <= frameIndex && (s.toFrame == null || s.toFrame > frameIndex))
+    const swapsB = pageSwaps.filter(s => s.fromFrame <= frameIndex + 1 && (s.toFrame == null || s.toFrame > frameIndex + 1))
+    const rawA = {}, rawB = {}
+    Object.keys(visiblePlayers).forEach(id => {
+      rawA[id] = frameA[id] || { x: CANVAS_W / 2, y: CANVAS_H / 2 }
+      rawB[id] = frameB[id] || rawA[id]
+    })
+    const posA = applySwaps(rawA, swapsA)
+    const posB = applySwaps(rawB, swapsB)
+    displayPositions = {}
+    Object.keys(visiblePlayers).forEach(id => {
+      const a = posA[id], b = posB[id] || a
+      displayPositions[id] = { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t }
+    })
+  }
 
   const handleBgUpload = (e) => {
     const file = e.target.files[0]
