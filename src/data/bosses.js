@@ -16,6 +16,7 @@ export const BOSS_IMAGES = {
   'siegecrafter-blackfuse':'/bosses/SiegecrafterBlackfuse.png',
   'orc-impaled':           '/bosses/orcmaleimpaled03.png',
   'iron-juggernaut':       '/bosses/IronJuggy.png',
+  'crawler-mine':          '/bosses/crawlermine.png',
   'garrosh-hellscream':    '/bosses/GarroshHellscream_1.png',
   'general-nazgrim':       '/bosses/General Nazgrim.png',
   'naz-mage':              '/bosses/Nazmage.png',

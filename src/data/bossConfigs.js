@@ -75,6 +75,7 @@ export const BOSS_CONFIGS = [
     enemyTypeKeys: [],
     bossSidebarItems: [
       { bossType: 'iron-juggernaut', label: 'Juggernaut', img: '/bosses/IronJuggy.png', color: '#8899aa', bgColor: '#050810' },
+      { bossType: 'crawler-mine', label: 'Crawler Mine', img: '/bosses/crawlermine.png', color: '#cc7722', bgColor: '#0a0500' },
       FOUL_MANIF,
       DEFAULT_ADD,
     ],
