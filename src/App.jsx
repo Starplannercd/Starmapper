@@ -409,9 +409,7 @@ export default function App() {
   const updatePosition = useCallback((id, x, y) => {
     updatePage(p => ({
       ...p,
-      keyframes: p.mode === 'diagram'
-        ? p.keyframes.map(kf => ({ ...kf, [id]: { x, y } }))
-        : p.keyframes.map((kf, i) => i === activeKeyframe ? { ...kf, [id]: { x, y } } : kf),
+      keyframes: p.keyframes.map((kf, i) => i === activeKeyframe ? { ...kf, [id]: { x, y } } : kf),
     }))
   }, [updatePage, activeKeyframe])
 
