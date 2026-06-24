@@ -3871,8 +3871,9 @@ export default function RaidCanvas({
           ))}
         </Layer>
 
-        {/* ── Trajectory paths — only the segments adjacent to the active frame ── */}
-        {!isPlaying && (keyframes?.length ?? 0) > 1 && (
+        {/* Trajectory/motion paths disabled: frames are discrete slides — icons never
+            animate between frames, so no "will be animated" path is shown. */}
+        {false && (keyframes?.length ?? 0) > 1 && (
           <Layer listening={false}>
             {/* Boss trajectories */}
             {bosses.map(boss => {
