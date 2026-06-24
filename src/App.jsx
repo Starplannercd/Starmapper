@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react'
 import { compressToEncodedURIComponent } from 'lz-string'
 import { exportForAddon } from './utils/exportForAddon'
+import { normalizeMaps, resolveMapUrl, makeMapId } from './utils/maps'
 import { db } from './firebase'
 import { doc, setDoc } from 'firebase/firestore'
 import RaidCanvas from './components/RaidCanvas'
@@ -105,10 +106,11 @@ export default function App() {
   const [tool,           setTool]           = useState('select')
   const [isPlaying,      setIsPlaying]      = useState(false)
   const [playT,          setPlayT]          = useState(0)
-  const [bgImage,        setBgImage]        = useState(() => activePlan?.bgImage ?? null)
+  const [maps,           setMaps]           = useState(() => normalizeMaps(activePlan))
   const [arrowStyle,     setArrowStyle]     = useState({ color: '#ff4444', dash: false, strokeWidth: 2.5, twoHeaded: false })
   const [clipboard,      setClipboard]      = useState(null)
   const [snapEnabled,    setSnapEnabled]    = useState(true)
+  const [showMapsPanel, setShowMapsPanel]  = useState(false)
   const [privateNote,    setPrivateNote]    = useState(() => {
     try { return localStorage.getItem('raidplan-private-note') ?? '' } catch { return '' }
   })
@@ -144,7 +146,7 @@ export default function App() {
   const [shareLoading,      setShareLoading]      = useState(false)
   const [addonExportCopied, setAddonExportCopied] = useState(false)
 
-  // Auto-save pages + bgImage into the active plan.
+  // Auto-save pages + maps into the active plan.
   // plansStore state updates immediately (needed for plan picker UI).
   // localStorage write is debounced — serializing a large plan on every drag
   // would block the main thread and cause lag.
@@ -153,7 +155,9 @@ export default function App() {
       const updated = {
         ...prev,
         plans: prev.plans.map(p =>
-          p.id === prev.activePlanId ? { ...p, pages, bgImage, updatedAt: Date.now() } : p
+          p.id === prev.activePlanId
+            ? { ...p, pages, maps, bgImage: maps[0]?.url ?? null, updatedAt: Date.now() }
+            : p
         ),
       }
       clearTimeout(lsSaveRef.current)
@@ -162,7 +166,7 @@ export default function App() {
       }, 1500)
       return updated
     })
-  }, [pages, bgImage]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [pages, maps]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Plan management ──────────────────────────────────────────────────────────
 
@@ -181,7 +185,7 @@ export default function App() {
     const plan = plansStoreRef.current.plans.find(p => p.id === planId)
     if (!plan) return
     setPages(plan.pages)
-    setBgImage(plan.bgImage ?? null)
+    setMaps(normalizeMaps(plan))
     setPlansStore(prev => ({ ...prev, activePlanId: planId }))
     resetCanvasState()
     setShowPlanPicker(false)
@@ -189,14 +193,14 @@ export default function App() {
 
   const createPlan = useCallback((name, bossKey) => {
     const id = makePlanId()
-    const plan = { id, name, bossKey, pages: [blankPage('Phase 1')], bgImage: null, updatedAt: Date.now() }
+    const plan = { id, name, bossKey, pages: [blankPage('Phase 1')], maps: [], bgImage: null, updatedAt: Date.now() }
     setPlansStore(prev => {
       const updated = { plans: [...prev.plans, plan], activePlanId: id }
       try { localStorage.setItem('wow-raidplan-plans-v1', JSON.stringify(updated)) } catch {}
       return updated
     })
     setPages(plan.pages)
-    setBgImage(null)
+    setMaps([])
     resetCanvasState()
     setShowPlanPicker(false)
   }, [resetCanvasState])
@@ -206,10 +210,10 @@ export default function App() {
     const filtered = current.plans.filter(p => p.id !== planId)
     if (filtered.length === 0) {
       const id = makePlanId()
-      const fallback = { id, name: 'My Plan', bossKey: 'immerseus', pages: [blankPage('Phase 1')], bgImage: null, updatedAt: Date.now() }
+      const fallback = { id, name: 'My Plan', bossKey: 'immerseus', pages: [blankPage('Phase 1')], maps: [], bgImage: null, updatedAt: Date.now() }
       const newStore = { plans: [fallback], activePlanId: fallback.id }
       setPages(fallback.pages)
-      setBgImage(null)
+      setMaps([])
       setPlansStore(newStore)
       try { localStorage.setItem('wow-raidplan-plans-v1', JSON.stringify(newStore)) } catch {}
       return
@@ -218,7 +222,7 @@ export default function App() {
       const next = filtered[filtered.length - 1]
       const newStore = { plans: filtered, activePlanId: next.id }
       setPages(next.pages)
-      setBgImage(next.bgImage ?? null)
+      setMaps(normalizeMaps(next))
       resetCanvasState()
       setPlansStore(newStore)
       try { localStorage.setItem('wow-raidplan-plans-v1', JSON.stringify(newStore)) } catch {}
@@ -233,6 +237,7 @@ export default function App() {
   const safeIdx = Math.min(activePageIdx, pages.length - 1)
   const page     = pages[safeIdx]
   const { players, keyframes } = page
+  const bgImage = resolveMapUrl(maps, keyframes, activeKeyframe)
   const currentKf    = keyframes[activeKeyframe] ?? {}
   const texts        = currentKf._texts        ?? []
   const arrows       = currentKf._arrows       ?? []
@@ -1271,8 +1276,8 @@ export default function App() {
     if (animRef.current) cancelAnimationFrame(animRef.current)
   }, [])
 
-  // Compress bgImage to JPEG so it fits in Firestore's 1 MB document limit
-  const compressBgImage = useCallback((dataUrl) => {
+  // Compress a single map image to JPEG at the lowest quality that fits budgetBytes.
+  const compressOneMap = useCallback((dataUrl, budgetBytes) => {
     if (!dataUrl) return Promise.resolve(null)
     return new Promise((resolve) => {
       const img = new window.Image()
@@ -1281,26 +1286,37 @@ export default function App() {
         canvas.width = img.width
         canvas.height = img.height
         canvas.getContext('2d').drawImage(img, 0, 0)
-        // Try decreasing quality until the base64 payload fits under 900 KB
         for (const q of [0.72, 0.50, 0.30]) {
           const result = canvas.toDataURL('image/jpeg', q)
-          if (result.length * 0.75 < 900_000) { resolve(result); return }
+          if (result.length * 0.75 < budgetBytes) { resolve(result); return }
         }
-        resolve(null) // image still too large — share without it
+        resolve(null) // still too large — omit
       }
       img.onerror = () => resolve(null)
       img.src = dataUrl
     })
   }, [])
 
+  // Compress the maps array so the total payload stays under ~900 KB.
+  // Budget is split evenly across however many maps are present.
+  const compressMaps = useCallback(async (mapsArr) => {
+    if (!mapsArr || mapsArr.length === 0) return []
+    const budgetPer = Math.floor(900_000 / mapsArr.length)
+    const results = await Promise.all(mapsArr.map(m => compressOneMap(m.url, budgetPer)))
+    return mapsArr
+      .map((m, i) => results[i] ? { ...m, url: results[i] } : null)
+      .filter(Boolean)
+  }, [compressOneMap])
+
   const handleShare = useCallback(async () => {
     setShareLoading(true)
     try {
-      const id  = Math.random().toString(36).slice(2, 8)
-      const bg  = await compressBgImage(bgImage)
+      const id           = Math.random().toString(36).slice(2, 8)
+      const compMaps     = await compressMaps(maps)
       await setDoc(doc(db, 'plans', id), {
         pages: pagesRef.current,
-        bgImage: bg,
+        maps: compMaps,
+        bgImage: compMaps[0]?.url ?? null,
         createdAt: new Date().toISOString(),
       })
       const url = `${window.location.origin}${window.location.pathname}#plan=${id}`
@@ -1310,8 +1326,8 @@ export default function App() {
     } catch (e) {
       console.error('Share failed:', e)
       try {
-        const bg  = await compressBgImage(bgImage)
-        const compressed = compressToEncodedURIComponent(JSON.stringify({ pages: pagesRef.current, bgImage: bg }))
+        const compMaps   = await compressMaps(maps)
+        const compressed = compressToEncodedURIComponent(JSON.stringify({ pages: pagesRef.current, maps: compMaps, bgImage: compMaps[0]?.url ?? null }))
         const url = `${window.location.origin}${window.location.pathname}#view=${compressed}`
         await navigator.clipboard.writeText(url)
         setShareCopied(true)
@@ -1320,7 +1336,7 @@ export default function App() {
     } finally {
       setShareLoading(false)
     }
-  }, [bgImage, compressBgImage])
+  }, [maps, compressMaps])
 
   const handleShareClip = useCallback(async (startFrame, endFrame) => {
     const clipKfs = page.keyframes.slice(startFrame, endFrame + 1)
@@ -1333,11 +1349,12 @@ export default function App() {
     )
     const clipPage = { ...page, players: clipPlayers, keyframes: clipKfs }
     try {
-      const id = Math.random().toString(36).slice(2, 8)
-      const bg = await compressBgImage(bgImage)
+      const id       = Math.random().toString(36).slice(2, 8)
+      const compMaps = await compressMaps(maps)
       await setDoc(doc(db, 'plans', id), {
         pages: [clipPage],
-        bgImage: bg,
+        maps: compMaps,
+        bgImage: compMaps[0]?.url ?? null,
         createdAt: new Date().toISOString(),
       })
       await navigator.clipboard.writeText(
@@ -1345,16 +1362,16 @@ export default function App() {
       )
     } catch {
       try {
-        const bg = await compressBgImage(bgImage)
+        const compMaps   = await compressMaps(maps)
         const compressed = compressToEncodedURIComponent(
-          JSON.stringify({ pages: [clipPage], bgImage: bg })
+          JSON.stringify({ pages: [clipPage], maps: compMaps, bgImage: compMaps[0]?.url ?? null })
         )
         await navigator.clipboard.writeText(
           `${window.location.origin}${window.location.pathname}#view=${compressed}`
         )
       } catch {}
     }
-  }, [page, bgImage, compressBgImage])
+  }, [page, maps, compressMaps])
 
   const duplicateToFrames = useCallback((type, id, targetFrames) => {
     if (!targetFrames.length) return
@@ -1551,6 +1568,9 @@ export default function App() {
   const handleBgUpload = (e) => {
     const file = e.target.files[0]
     if (!file) return
+    // Reset the input so the same file can be re-uploaded if needed
+    e.target.value = ''
+    const name = file.name.replace(/\.[^.]+$/, '') || 'Map'
     const reader = new FileReader()
     reader.onload = (ev) => {
       const img = new window.Image()
@@ -1566,12 +1586,39 @@ export default function App() {
         c.width      = CANVAS_W
         c.height     = CANVAS_H
         c.getContext('2d').drawImage(img, -ox, -oy, sw, sh)
-        setBgImage(c.toDataURL('image/jpeg', 0.80))
+        const url = c.toDataURL('image/jpeg', 0.80)
+        const id  = makeMapId()
+        setMaps(prev => [...prev, { id, name, url }])
+        // Assign this map to the current frame
+        updateKf(kf => ({ ...kf, _mapId: id }))
       }
       img.src = ev.target.result
     }
     reader.readAsDataURL(file)
   }
+
+  const setFrameMap = useCallback((mapId) => {
+    updateKf(kf => {
+      const next = { ...kf }
+      if (mapId) next._mapId = mapId
+      else delete next._mapId
+      return next
+    })
+  }, [updateKf])
+
+  const deleteMap = useCallback((mapId) => {
+    setMaps(prev => prev.filter(m => m.id !== mapId))
+    // Clear _mapId references to the deleted map from all pages
+    setPages(prev => prev.map(p => ({
+      ...p,
+      keyframes: p.keyframes.map(kf => {
+        if (kf._mapId !== mapId) return kf
+        const next = { ...kf }
+        delete next._mapId
+        return next
+      }),
+    })))
+  }, [])
 
   // ── Render ───────────────────────────────────────────────────────────────────
 
@@ -1588,13 +1635,55 @@ export default function App() {
             📋 {clipboard.type === 'multi' ? `${clipboard.items.length} items` : clipboard.type} copied — Ctrl+V to paste
           </span>
         )}
-        <div className="header-right-actions">
+        <div className="header-right-actions" style={{ position: 'relative' }}>
           <label className="btn-secondary upload-btn">
-            Upload Map
+            + Map
             <input type="file" accept="image/*" onChange={handleBgUpload} style={{ display: 'none' }} />
           </label>
-          {bgImage && (
-            <button className="btn-secondary" onClick={() => setBgImage(null)}>Clear Map</button>
+          {maps.length > 0 && (
+            <>
+              <select
+                className="btn-secondary"
+                style={{ padding: '2px 6px', cursor: 'pointer' }}
+                value={keyframes[activeKeyframe]?._mapId ?? ''}
+                onChange={e => setFrameMap(e.target.value || null)}
+                title="Map shown on this frame"
+              >
+                <option value="">Inherit / carry forward</option>
+                {maps.map(m => (
+                  <option key={m.id} value={m.id}>{m.name}</option>
+                ))}
+              </select>
+              <button className="btn-secondary" onClick={() => setShowMapsPanel(v => !v)}>
+                Manage Maps ({maps.length})
+              </button>
+            </>
+          )}
+          {showMapsPanel && (
+            <div style={{
+              position: 'absolute', top: '100%', right: 0, zIndex: 999,
+              background: '#1a1208', border: '1px solid #5a3e10', borderRadius: 6,
+              padding: '10px 12px', minWidth: 260, boxShadow: '0 4px 16px rgba(0,0,0,0.7)',
+            }}>
+              <div style={{ fontWeight: 600, marginBottom: 8, color: '#c8a227', fontSize: 13 }}>Maps</div>
+              {maps.map((m, i) => (
+                <div key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                  <img src={m.url} alt="" style={{ width: 60, height: 34, objectFit: 'cover', borderRadius: 3, border: '1px solid #444', flexShrink: 0 }} />
+                  <input
+                    style={{ flex: 1, background: '#111', border: '1px solid #444', borderRadius: 3, color: '#ddd', padding: '2px 6px', fontSize: 12 }}
+                    value={m.name}
+                    onChange={e => setMaps(prev => prev.map((x, j) => j === i ? { ...x, name: e.target.value } : x))}
+                  />
+                  <button
+                    className="btn-danger"
+                    style={{ padding: '2px 7px', fontSize: 11 }}
+                    onClick={() => deleteMap(m.id)}
+                  >✕</button>
+                </div>
+              ))}
+              {maps.length === 0 && <div style={{ color: '#888', fontSize: 12 }}>No maps uploaded yet.</div>}
+              <button className="btn-secondary" style={{ marginTop: 6, width: '100%', fontSize: 12 }} onClick={() => setShowMapsPanel(false)}>Close</button>
+            </div>
           )}
           <button
             className="btn-danger"
@@ -1602,7 +1691,7 @@ export default function App() {
               if (!window.confirm('Reset this plan to a blank slate?')) return
               setPages([blankPage('Phase 1')])
               resetCanvasState()
-              setBgImage(null)
+              setMaps([])
             }}
           >
             🗑 Reset

@@ -4,6 +4,7 @@ import { db } from '../firebase'
 import { doc, getDoc } from 'firebase/firestore'
 import RaidCanvas from './RaidCanvas'
 import { WOW_CLASSES, ROLE_ICONS, ENEMY_TYPES } from '../data/classes'
+import { normalizeMaps, resolveMapUrl } from '../utils/maps'
 
 const CANVAS_W   = 1294
 const CANVAS_H   = 728
@@ -240,7 +241,7 @@ function NotesPanel({ notes = {} }) {
 // ── Main component ─────────────────────────────────────────────────────────
 export default function PlanViewer() {
   const [pages,         setPages]         = useState(null)
-  const [bgImage,       setBgImage]       = useState(null)
+  const [maps,          setMaps]          = useState([])
   const [error,         setError]         = useState(null)
   const [activePageIdx, setActivePageIdx] = useState(0)
   const [playT,         setPlayT]         = useState(0)
@@ -316,7 +317,7 @@ export default function PlanViewer() {
         .then(snap => {
           if (!snap.exists()) { setError('Plan not found — the link may be invalid.'); return }
           const data = snap.data()
-          setPages(normalizePages(data.pages)); setBgImage(data.bgImage ?? null)
+          setPages(normalizePages(data.pages)); setMaps(normalizeMaps(data))
         })
         .catch(() => setError('Could not load plan — check your connection and try again.'))
       return
@@ -325,7 +326,7 @@ export default function PlanViewer() {
       try {
         const raw = JSON.parse(decompressFromEncodedURIComponent(hash.slice(6)))
         if (Array.isArray(raw)) setPages(normalizePages(raw))
-        else { setPages(normalizePages(raw.pages)); setBgImage(raw.bgImage ?? null) }
+        else { setPages(normalizePages(raw.pages)); setMaps(normalizeMaps(raw)) }
       } catch { setError('Could not load plan — the link may be invalid or corrupted.') }
       return
     }
@@ -531,7 +532,8 @@ export default function PlanViewer() {
     texts: stableTexts,
     markers: (displayKf._markers ?? []).filter(m => !m.hidden),
     bosses: visibleBosses, fieldEffects: visibleFieldEffects,
-    bgImage, tool: 'select', setTool: NOOP, isPlaying: true, playTimeSeconds,
+    bgImage: resolveMapUrl(maps, keyframes, Math.min(currentFrame, keyframes.length - 1)),
+    tool: 'select', setTool: NOOP, isPlaying: true, playTimeSeconds,
     selectedId: null, selectedTextId: null, selectedIds: NOOP_SET,
     arrowStyle: { color: '#ff4444', dash: false, strokeWidth: 2.5, twoHeaded: false },
     clipboard: null,
