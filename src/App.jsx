@@ -342,7 +342,7 @@ export default function App() {
     const pos  = { x: px, y: py }
     const data = { id, classKey, specKey, color: cls.color,
                    label: spec?.label ?? cls.label, name: spec?.label ?? cls.label,
-                   scale: 0.85, birthFrame: activeKeyframe }
+                   scale: 0.95, birthFrame: activeKeyframe }
     updatePage(p => ({
       ...p,
       players:   { ...p.players, [id]: data },
@@ -718,7 +718,7 @@ export default function App() {
     const id = `${Date.now()}-${Math.random().toString(36).slice(2)}`
     updateKf(kf => ({
       ...kf,
-      _markers: [...(kf._markers ?? []), { id, type, x: x ?? CANVAS_W / 2, y: y ?? CANVAS_H / 2, scale: 0.75 }],
+      _markers: [...(kf._markers ?? []), { id, type, x: x ?? CANVAS_W / 2, y: y ?? CANVAS_H / 2, scale: 1.0 }],
     }))
   }, [updateKf])
 
