@@ -1288,7 +1288,8 @@ export default function App() {
         canvas.getContext('2d').drawImage(img, 0, 0)
         for (const q of [0.72, 0.50, 0.30]) {
           const result = canvas.toDataURL('image/jpeg', q)
-          if (result.length * 0.75 < budgetBytes) { resolve(result); return }
+          // The data-URL string is stored verbatim, so its byte cost ≈ its length.
+          if (result.length < budgetBytes) { resolve(result); return }
         }
         resolve(null) // still too large — omit
       }
@@ -1297,11 +1298,12 @@ export default function App() {
     })
   }, [])
 
-  // Compress the maps array so the total payload stays under ~900 KB.
-  // Budget is split evenly across however many maps are present.
+  // Compress the maps array so the total payload stays well under Firestore's 1 MB
+  // document limit (leaving headroom for the pages data). Budget is split evenly
+  // across however many maps are present.
   const compressMaps = useCallback(async (mapsArr) => {
     if (!mapsArr || mapsArr.length === 0) return []
-    const budgetPer = Math.floor(900_000 / mapsArr.length)
+    const budgetPer = Math.floor(850_000 / mapsArr.length)
     const results = await Promise.all(mapsArr.map(m => compressOneMap(m.url, budgetPer)))
     return mapsArr
       .map((m, i) => results[i] ? { ...m, url: results[i] } : null)
@@ -1316,7 +1318,6 @@ export default function App() {
       await setDoc(doc(db, 'plans', id), {
         pages: pagesRef.current,
         maps: compMaps,
-        bgImage: compMaps[0]?.url ?? null,
         createdAt: new Date().toISOString(),
       })
       const url = `${window.location.origin}${window.location.pathname}#plan=${id}`
@@ -1327,7 +1328,7 @@ export default function App() {
       console.error('Share failed:', e)
       try {
         const compMaps   = await compressMaps(maps)
-        const compressed = compressToEncodedURIComponent(JSON.stringify({ pages: pagesRef.current, maps: compMaps, bgImage: compMaps[0]?.url ?? null }))
+        const compressed = compressToEncodedURIComponent(JSON.stringify({ pages: pagesRef.current, maps: compMaps }))
         const url = `${window.location.origin}${window.location.pathname}#view=${compressed}`
         await navigator.clipboard.writeText(url)
         setShareCopied(true)
@@ -1354,7 +1355,6 @@ export default function App() {
       await setDoc(doc(db, 'plans', id), {
         pages: [clipPage],
         maps: compMaps,
-        bgImage: compMaps[0]?.url ?? null,
         createdAt: new Date().toISOString(),
       })
       await navigator.clipboard.writeText(
@@ -1364,7 +1364,7 @@ export default function App() {
       try {
         const compMaps   = await compressMaps(maps)
         const compressed = compressToEncodedURIComponent(
-          JSON.stringify({ pages: [clipPage], maps: compMaps, bgImage: compMaps[0]?.url ?? null })
+          JSON.stringify({ pages: [clipPage], maps: compMaps })
         )
         await navigator.clipboard.writeText(
           `${window.location.origin}${window.location.pathname}#view=${compressed}`
