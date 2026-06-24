@@ -3437,7 +3437,7 @@ export default function RaidCanvas({
   }, [needsAnimClock])
 
   useEffect(() => {
-    if (!needsAnimClock) return
+    if (!needsAnimClock || !isPlaying) return
     const base = (performance.now() - mountTimeRef.current) / 1000
     let rafStart = null
     let lastUpdate = -1
@@ -3453,7 +3453,7 @@ export default function RaidCanvas({
     }
     effectRafRef.current = requestAnimationFrame(tick)
     return () => { if (effectRafRef.current) cancelAnimationFrame(effectRafRef.current) }
-  }, [needsAnimClock])
+  }, [needsAnimClock, isPlaying])
 
   useEffect(() => {
     const ARROW_DELTAS = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }
