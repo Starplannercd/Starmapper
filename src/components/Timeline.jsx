@@ -360,8 +360,8 @@ export default function Timeline({
         </span>
 
         <button className="btn-secondary diagram-mode-switch"
-          onClick={onSwitchToDiagram} disabled={isPlaying}
-          title="Pause — return to diagram view, steps are preserved">
+          onClick={onStop} disabled={!isPlaying}
+          title="Pause playback">
           ⏸ Pause
         </button>
 
