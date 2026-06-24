@@ -2428,22 +2428,9 @@ const SWIRL_LAYERS = [
 ]
 
 function SwirlOverlay({ swirl, swirlAngle, beamLen, isPlaying, tool, onMoveSwirl, onRemoveSwirl, onContextMenu }) {
-  const [localAngle, setLocalAngle] = useState(0)
-  const rafRef = useRef(null)
-
-  useEffect(() => {
-    if (isPlaying) return
-    let start = null
-    const tick = ts => {
-      if (!start) start = ts
-      setLocalAngle(((ts - start) / 5000) * 360 % 360)
-      rafRef.current = requestAnimationFrame(tick)
-    }
-    rafRef.current = requestAnimationFrame(tick)
-    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current) }
-  }, [isPlaying])
-
-  const angle = isPlaying ? swirlAngle : localAngle
+  // When playing, the angle is driven by swirlAngle (from playT). When paused/stopped,
+  // the swirl stays frozen at a fixed angle so nothing animates on a paused frame.
+  const angle = isPlaying ? swirlAngle : 0
   const baseAngle  = (swirl.clockwise ? angle : -angle) - 90
   const radLeading = baseAngle * (Math.PI / 180)
   const lineX = Math.cos(radLeading) * beamLen
