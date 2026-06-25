@@ -2565,6 +2565,7 @@ function BossElement({ boss, tool, isPlaying, effectTime, onMoveBoss, onRemoveBo
   const imgCrawlerMine   = useImage(BOSS_IMAGES['crawler-mine'])
   const imgIronHunter    = useImage(BOSS_IMAGES['iron-hunter'])
   const imgIronMage      = useImage(BOSS_IMAGES['iron-mage'])
+  const imgIronPriest    = useImage(BOSS_IMAGES['iron-priest'])
   const imgGarrosh       = useImage(BOSS_IMAGES['garrosh-hellscream'])
   const imgNazgrim       = useImage(BOSS_IMAGES['general-nazgrim'])
   const imgNazMage       = useImage(BOSS_IMAGES['naz-mage'])
@@ -2583,7 +2584,7 @@ function BossElement({ boss, tool, isPlaying, effectTime, onMoveBoss, onRemoveBo
     'siegecrafter-blackfuse': imgSiegecrafter, 'orc-impaled': imgOrcImpaled,
     'iron-juggernaut': imgIronJugg, 'crawler-mine': imgCrawlerMine,
     'crawler-mine-1': imgCrawlerMine, 'crawler-mine-2': imgCrawlerMine, 'crawler-mine-3': imgCrawlerMine,
-    'iron-hunter': imgIronHunter, 'iron-mage': imgIronMage,
+    'iron-hunter': imgIronHunter, 'iron-mage': imgIronMage, 'iron-priest': imgIronPriest,
     'garrosh-hellscream': imgGarrosh,
     'general-nazgrim': imgNazgrim,
     'naz-mage': imgNazMage, 'naz-common': imgNazCommon, 'naz-rogue': imgNazRogue,

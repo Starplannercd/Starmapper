@@ -19,6 +19,7 @@ export const BOSS_IMAGES = {
   'crawler-mine':          '/bosses/crawlermine.png',
   'iron-hunter':           '/bosses/hunta.png',
   'iron-mage':             '/bosses/mages.png',
+  'iron-priest':           '/bosses/Priestz.png',
   'garrosh-hellscream':    '/bosses/GarroshHellscream_1.png',
   'general-nazgrim':       '/bosses/General Nazgrim.png',
   'naz-mage':              '/bosses/Nazmage.png',

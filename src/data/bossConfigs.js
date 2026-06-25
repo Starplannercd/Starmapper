@@ -80,6 +80,7 @@ export const BOSS_CONFIGS = [
       { bossType: 'crawler-mine-3', label: 'Mine 3', img: '/bosses/crawlermine.png', color: '#cc7722', bgColor: '#0a0500' },
       { bossType: 'iron-hunter', label: 'Hunter', img: '/bosses/hunta.png', color: '#33aa55', bgColor: '#04100a' },
       { bossType: 'iron-mage', label: 'Mage', img: '/bosses/mages.png', color: '#3399dd', bgColor: '#040a14' },
+      { bossType: 'iron-priest', label: 'Priest', img: '/bosses/Priestz.png', color: '#dddddd', bgColor: '#0a0a0a' },
       FOUL_MANIF,
       DEFAULT_ADD,
     ],
