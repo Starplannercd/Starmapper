@@ -2708,18 +2708,19 @@ function BossElement({ boss, tool, isPlaying, effectTime, onMoveBoss, onRemoveBo
       </Group>
       {mineNum && (
         // All-blue numbered assignment badge above the mine's head (no black parts).
+        // Flat square, sharp corners, to match the reference screenshot.
         <Group scaleX={sc} scaleY={sc} listening={false}>
           {/* dark-blue frame */}
-          <Rect x={-16} y={-CH - 39} width={32} height={32} cornerRadius={8} fill="#0e3a86" />
+          <Rect x={-23} y={-CH - 54} width={46} height={46} fill="#0e3a86" />
           {/* blue beveled face */}
-          <Rect x={-15} y={-CH - 38} width={30} height={30} cornerRadius={7}
-            fillLinearGradientStartPoint={{ x: 0, y: -CH - 38 }}
-            fillLinearGradientEndPoint={{ x: 0, y: -CH - 8 }}
+          <Rect x={-20} y={-CH - 51} width={40} height={40}
+            fillLinearGradientStartPoint={{ x: 0, y: -CH - 51 }}
+            fillLinearGradientEndPoint={{ x: 0, y: -CH - 11 }}
             fillLinearGradientColorStops={[0, '#54a6f5', 1, '#1f6fd0']} />
           {/* top highlight for the bevel */}
-          <Rect x={-11} y={-CH - 35} width={22} height={6} cornerRadius={3} fill="#9fd0ff" opacity={0.55} />
-          <Text text={mineNum} x={-15} y={-CH - 38} width={30} height={30}
-            align="center" verticalAlign="middle" fontSize={20} fontStyle="bold"
+          <Rect x={-15} y={-CH - 47} width={30} height={8} fill="#9fd0ff" opacity={0.55} />
+          <Text text={mineNum} x={-20} y={-CH - 51} width={40} height={40}
+            align="center" verticalAlign="middle" fontSize={28} fontStyle="bold"
             fill="#ffffff" shadowColor="#0e3a86" shadowBlur={2} />
         </Group>
       )}
