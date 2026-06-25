@@ -2579,7 +2579,9 @@ function BossElement({ boss, tool, isPlaying, effectTime, onMoveBoss, onRemoveBo
     'sha-of-pride': imgShaOfPride, 'sha-of-violence': imgShaOfViolence, 'foul-manifestation': imgFoulManif,
     'dragonmaw-guard': imgDragonmaw, galakras: imgGalakras, 'beachhead-demolisher': imgDemolisher,
     'siegecrafter-blackfuse': imgSiegecrafter, 'orc-impaled': imgOrcImpaled,
-    'iron-juggernaut': imgIronJugg, 'crawler-mine': imgCrawlerMine, 'garrosh-hellscream': imgGarrosh,
+    'iron-juggernaut': imgIronJugg, 'crawler-mine': imgCrawlerMine,
+    'crawler-mine-1': imgCrawlerMine, 'crawler-mine-2': imgCrawlerMine, 'crawler-mine-3': imgCrawlerMine,
+    'garrosh-hellscream': imgGarrosh,
     'general-nazgrim': imgNazgrim,
     'naz-mage': imgNazMage, 'naz-common': imgNazCommon, 'naz-rogue': imgNazRogue,
     'naz-shaman': imgNazShaman, 'naz-sniper': imgNazSniper, 'naz-banner': imgNazBanner,
@@ -2587,6 +2589,7 @@ function BossElement({ boss, tool, isPlaying, effectTime, onMoveBoss, onRemoveBo
     thok: imgThok,
   }
   const img      = imgMap[boss.type] ?? null
+  const mineNum  = boss.type?.startsWith('crawler-mine-') ? boss.type.slice(-1) : null
   const isLocked = boss.locked ?? false
   const sc       = boss.scale ?? 1
   const bossColor = BOSS_CONFIGS.flatMap(b => b.bossSidebarItems).find(s => s.bossType === boss.type)?.color ?? '#c8a227'
@@ -2703,6 +2706,23 @@ function BossElement({ boss, tool, isPlaying, effectTime, onMoveBoss, onRemoveBo
           </>
         )}
       </Group>
+      {mineNum && (
+        // All-blue numbered assignment badge above the mine's head (no black parts).
+        <Group scaleX={sc} scaleY={sc} listening={false}>
+          {/* dark-blue frame */}
+          <Rect x={-16} y={-CH - 39} width={32} height={32} cornerRadius={8} fill="#0e3a86" />
+          {/* blue beveled face */}
+          <Rect x={-15} y={-CH - 38} width={30} height={30} cornerRadius={7}
+            fillLinearGradientStartPoint={{ x: 0, y: -CH - 38 }}
+            fillLinearGradientEndPoint={{ x: 0, y: -CH - 8 }}
+            fillLinearGradientColorStops={[0, '#54a6f5', 1, '#1f6fd0']} />
+          {/* top highlight for the bevel */}
+          <Rect x={-11} y={-CH - 35} width={22} height={6} cornerRadius={3} fill="#9fd0ff" opacity={0.55} />
+          <Text text={mineNum} x={-15} y={-CH - 38} width={30} height={30}
+            align="center" verticalAlign="middle" fontSize={20} fontStyle="bold"
+            fill="#ffffff" shadowColor="#0e3a86" shadowBlur={2} />
+        </Group>
+      )}
       <TokenLabel
         text={boss.canvasLabel}
         lx={isCharacter ? -(CW / 2) * sc : -70}
