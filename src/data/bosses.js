@@ -24,6 +24,7 @@ export const BOSS_IMAGES = {
   'earthbreaker-haromm':   '/bosses/EarthbreakerHaromm.png',
   'wavebinder-kardris':    '/bosses/WaveBinderKardris.png',
   'iron-tomb':             '/bosses/irontomb.png?v=3',
+  'earth-elemental':       '/bosses/Earthele.png',
   'general-nazgrim':       '/bosses/General Nazgrim.png',
   'naz-mage':              '/bosses/Nazmage.png',
   'naz-common':            '/bosses/Nazcommon.png',

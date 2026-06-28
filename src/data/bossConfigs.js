@@ -95,6 +95,7 @@ export const BOSS_CONFIGS = [
       { bossType: 'earthbreaker-haromm', label: 'Haromm',  img: '/bosses/EarthbreakerHaromm.png', color: '#996633', bgColor: '#0a0600' },
       { bossType: 'wavebinder-kardris',  label: 'Kardris', img: '/bosses/WaveBinderKardris.png',  color: '#3377cc', bgColor: '#000610' },
       { bossType: 'iron-tomb',           label: 'Iron Tomb', img: '/bosses/irontomb.png?v=3',    color: '#888a8c', bgColor: '#0a0a0a' },
+      { bossType: 'earth-elemental',     label: 'Earth Ele', img: '/bosses/Earthele.png',        color: '#aa7744', bgColor: '#0a0600' },
       FOUL_MANIF,
       DEFAULT_ADD,
     ],
