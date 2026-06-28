@@ -2578,6 +2578,7 @@ function BossElement({ boss, tool, isPlaying, effectTime, onMoveBoss, onRemoveBo
   const imgThok          = useImage(BOSS_IMAGES['thok'])
   const imgHaromm        = useImage(BOSS_IMAGES['earthbreaker-haromm'])
   const imgKardris       = useImage(BOSS_IMAGES['wavebinder-kardris'])
+  const imgIronTomb      = useImage(BOSS_IMAGES['iron-tomb'])
   const imgMap = {
     immerseus: imgImmerseus, 'rook-stonetoe': imgRook, 'he-softfoot': imgHe,
     'sun-tenderheart': imgSun, 'default-add': imgDefaultAdd, norushen: imgNorushen,
@@ -2594,6 +2595,7 @@ function BossElement({ boss, tool, isPlaying, effectTime, onMoveBoss, onRemoveBo
     'naz-htt': imgNazHTT,
     thok: imgThok,
     'earthbreaker-haromm': imgHaromm, 'wavebinder-kardris': imgKardris,
+    'iron-tomb': imgIronTomb,
   }
   const img      = imgMap[boss.type] ?? null
   const mineNum  = boss.type?.startsWith('crawler-mine-') ? boss.type.slice(-1) : null
