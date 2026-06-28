@@ -89,9 +89,14 @@ export const BOSS_CONFIGS = [
     key: 'dark-shaman',
     label: "Kor'kron Dark Shaman",
     color: '#556633',
-    icon: null,
+    icon: '/bosses/EarthbreakerHaromm.png',
     enemyTypeKeys: ['add'],
-    bossSidebarItems: [FOUL_MANIF, DEFAULT_ADD],
+    bossSidebarItems: [
+      { bossType: 'earthbreaker-haromm', label: 'Haromm',  img: '/bosses/EarthbreakerHaromm.png', color: '#996633', bgColor: '#0a0600' },
+      { bossType: 'wavebinder-kardris',  label: 'Kardris', img: '/bosses/WaveBinderKardris.png',  color: '#3377cc', bgColor: '#000610' },
+      FOUL_MANIF,
+      DEFAULT_ADD,
+    ],
   },
   {
     key: 'general-nazgrim',
