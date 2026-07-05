@@ -2238,7 +2238,7 @@ function TextHighlightEffect({ effect, dims, t, color }) {
 function PlayerMarker({
   player, pos, classOverride, isSelected, isMultiSelected, isPlaying, tool, effectTime,
   onAction, onDragEnd, onDragEndMulti, groupRef, onDragStart, onDragMove, onShowContextMenu,
-  onSnapDragMove, onSnapDragEnd, onHoverObject,
+  onSnapDragMove, onSnapDragEnd, onHoverObject, onRaise,
 }) {
   const effectiveClassKey = classOverride?.classKey ?? player.classKey
   const effectiveSpecKey  = classOverride?.specKey  ?? player.specKey ?? null
@@ -2312,7 +2312,7 @@ function PlayerMarker({
       rotation={player.rotation ?? 0}
       draggable={!isPlaying && tool === 'select' && !isLocked}
       onClick={handleClick}
-      onMouseDown={handleMouseDown}
+      onMouseDown={e => { if (e.evt.button === 0) onRaise?.(); handleMouseDown(e) }}
       onContextMenu={handleContextMenu}
       onDragStart={e => {
         e.target.to({ scaleX: 1.08, scaleY: 1.08, shadowEnabled: true, shadowBlur: 14, shadowColor: 'rgba(0,0,0,0.5)', shadowOffset: { x: 2, y: 5 }, shadowOpacity: 0.45, duration: 0.12 })
@@ -2427,7 +2427,7 @@ const SWIRL_LAYERS = [
   { back: 4,   opacity: 0.750, r: 175, g: 235, b: 255 },
 ]
 
-function SwirlOverlay({ swirl, swirlAngle, beamLen, isPlaying, tool, onMoveSwirl, onRemoveSwirl, onContextMenu }) {
+function SwirlOverlay({ swirl, swirlAngle, beamLen, isPlaying, tool, onMoveSwirl, onRemoveSwirl, onContextMenu, onRaise }) {
   // When playing, the angle is driven by swirlAngle. When paused/stopped the swirl
   // freezes at a fixed angle so nothing animates while editing a paused frame.
   const angle = isPlaying ? swirlAngle : 0
@@ -2444,6 +2444,7 @@ function SwirlOverlay({ swirl, swirlAngle, beamLen, isPlaying, tool, onMoveSwirl
       onClick={e => { e.cancelBubble = true; if (e.evt.button !== 0) return; if (tool === 'delete') onRemoveSwirl(swirl.id) }}
       onMouseDown={e => {
         e.cancelBubble = true
+        if (e.evt.button === 0) onRaise?.()
         if (e.evt.button === 1) { e.evt.preventDefault(); onRemoveSwirl(swirl.id) }
       }}
       onContextMenu={e => { e.evt.preventDefault(); e.cancelBubble = true; onContextMenu?.(e, swirl.id) }}
@@ -2466,7 +2467,7 @@ function SwirlOverlay({ swirl, swirlAngle, beamLen, isPlaying, tool, onMoveSwirl
 
 // ─── World marker ─────────────────────────────────────────────────────────────
 
-function MarkerElement({ marker, isPlaying, tool, onMoveMarker, onRemoveMarker, onShowContextMenu, onObjectFocus, onHoverObject, onSnapDragMove, onSnapDragEnd, groupRef, isMultiSelected, onMultiDragStart, onMultiDragMove, onMultiDragEnd }) {
+function MarkerElement({ marker, isPlaying, tool, onMoveMarker, onRemoveMarker, onShowContextMenu, onObjectFocus, onHoverObject, onSnapDragMove, onSnapDragEnd, groupRef, isMultiSelected, onMultiDragStart, onMultiDragMove, onMultiDragEnd, onRaise }) {
   const def      = WORLD_MARKERS.find(m => m.key === marker.type)
   const iconImg  = useImage(def?.icon ?? null)
   const isLocked = marker.locked ?? false
@@ -2513,6 +2514,7 @@ function MarkerElement({ marker, isPlaying, tool, onMoveMarker, onRemoveMarker, 
       }}
       onMouseDown={e => {
         e.cancelBubble = true
+        if (e.evt.button === 0) onRaise?.()
         if (e.evt.button === 1) { e.evt.preventDefault(); if (!isLocked) onRemoveMarker(marker.id) }
       }}
       onContextMenu={handleContextMenu}
@@ -2546,7 +2548,7 @@ function MarkerElement({ marker, isPlaying, tool, onMoveMarker, onRemoveMarker, 
 
 // ─── Boss element ─────────────────────────────────────────────────────────────
 
-function BossElement({ boss, tool, isPlaying, effectTime, onMoveBoss, onRemoveBoss, onShowContextMenu, onObjectFocus, onHoverObject, onSnapDragMove, onSnapDragEnd, groupRef, isMultiSelected, onMultiDragStart, onMultiDragMove, onMultiDragEnd }) {
+function BossElement({ boss, tool, isPlaying, effectTime, onMoveBoss, onRemoveBoss, onShowContextMenu, onObjectFocus, onHoverObject, onSnapDragMove, onSnapDragEnd, groupRef, isMultiSelected, onMultiDragStart, onMultiDragMove, onMultiDragEnd, onRaise }) {
   const imgImmerseus  = useImage(BOSS_IMAGES['immerseus'])
   const imgRook       = useImage(BOSS_IMAGES['rook-stonetoe'])
   const imgHe         = useImage(BOSS_IMAGES['he-softfoot'])
@@ -2664,6 +2666,7 @@ function BossElement({ boss, tool, isPlaying, effectTime, onMoveBoss, onRemoveBo
       }}
       onMouseDown={e => {
         e.cancelBubble = true
+        if (e.evt.button === 0) onRaise?.()
         if (e.evt.button === 1) { e.evt.preventDefault(); if (!isLocked) onRemoveBoss(boss.id) }
       }}
       onContextMenu={handleContextMenu}
@@ -3195,7 +3198,7 @@ function TextElement({ textEl, isSelected, isPlaying, tool, effectTime, animTime
 
 // ─── Standalone field effect ──────────────────────────────────────────────────
 
-function FieldEffectElement({ fe, tool, isPlaying, onMove, onRemove, onShowContextMenu, onObjectFocus, onHoverObject, effectTime, playElapsedTime, onSnapDragMove, onSnapDragEnd, groupRef, isMultiSelected, onMultiDragStart, onMultiDragMove, onMultiDragEnd }) {
+function FieldEffectElement({ fe, tool, isPlaying, onMove, onRemove, onShowContextMenu, onObjectFocus, onHoverObject, effectTime, playElapsedTime, onSnapDragMove, onSnapDragEnd, groupRef, isMultiSelected, onMultiDragStart, onMultiDragMove, onMultiDragEnd, onRaise }) {
   const isLocked = fe.locked ?? false
   const feScale  = fe.scale ?? 1
   return (
@@ -3219,6 +3222,7 @@ function FieldEffectElement({ fe, tool, isPlaying, onMove, onRemove, onShowConte
       }}
       onMouseDown={e => {
         e.cancelBubble = true
+        if (e.evt.button === 0) onRaise?.()
         if (e.evt.button === 1) { e.evt.preventDefault(); if (!isLocked) onRemove(fe.id) }
       }}
       onContextMenu={e => {
@@ -3350,6 +3354,17 @@ export default function RaidCanvas({
   const bossGroupRefs         = useRef({})
   const fieldEffectGroupRefs  = useRef({})
   const textGroupRefs         = useRef({})
+
+  // ── Click-to-front z-ordering (session only). A clicked object gets the highest
+  //    sequence number so it sorts last (on top) in the shared object layer. ──
+  const [zBumps, setZBumps] = useState({})
+  const zSeqRef = useRef(0)
+  const bringToFront = useCallback((key) => {
+    setZBumps(prev => {
+      if (prev[key] === zSeqRef.current) return prev   // already on top → no re-render
+      return { ...prev, [key]: ++zSeqRef.current }
+    })
+  }, [])
   const dragStateRef    = useRef(null)
   const selectedIdsRef  = useRef(selectedIds)
   const selectedAllRef  = useRef(new Set())
@@ -3807,106 +3822,7 @@ export default function RaidCanvas({
           {bgImg && <Image image={bgImg} x={0} y={0} width={width} height={height} opacity={0.85} listening={false} />}
         </Layer>
 
-        <Layer>
-          {swirls.map(s => (
-            <SwirlOverlay key={s.id} swirl={s} swirlAngle={swirlAngle} beamLen={beamLen}
-              isPlaying={isPlaying} tool={tool} onMoveSwirl={onMoveSwirl} onRemoveSwirl={onRemoveSwirl}
-              onContextMenu={(e, id) => { if (!isPlaying) setContextMenu({ type: 'swirl', id, x: e.evt.clientX, y: e.evt.clientY }) }} />
-          ))}
-        </Layer>
-
-        <Layer>
-          {(bosses ?? []).map(b => (
-            <BossElement key={b.id} boss={b} tool={tool} isPlaying={isPlaying} effectTime={effectTime}
-              onMoveBoss={onMoveBoss} onRemoveBoss={onRemoveBoss}
-              onShowContextMenu={handleShowContextMenu}
-              onHoverObject={obj => { hoveredObjectRef.current = obj; onObjectHover?.(obj) }}
-              onSnapDragMove={handleTokenDragMove} onSnapDragEnd={clearSnapLines}
-              groupRef={el => { if (el) bossGroupRefs.current[b.id] = el; else delete bossGroupRefs.current[b.id] }}
-              isMultiSelected={selectedAll.has(`boss:${b.id}`)}
-              onMultiDragStart={handleMultiDragStart}
-              onMultiDragMove={handleMultiDragMove}
-              onMultiDragEnd={handleMultiDragEnd} />
-          ))}
-        </Layer>
-
-        <Layer>
-          {(markers ?? []).map(m => (
-            <MarkerElement key={m.id} marker={m}
-              isPlaying={isPlaying} tool={tool}
-              onMoveMarker={onMoveMarker} onRemoveMarker={onRemoveMarker}
-              onShowContextMenu={handleShowContextMenu}
-              onHoverObject={obj => { hoveredObjectRef.current = obj; onObjectHover?.(obj) }}
-              onSnapDragMove={handleTokenDragMove} onSnapDragEnd={clearSnapLines}
-              groupRef={el => { if (el) markerGroupRefs.current[m.id] = el; else delete markerGroupRefs.current[m.id] }}
-              isMultiSelected={selectedAll.has(`marker:${m.id}`)}
-              onMultiDragStart={handleMultiDragStart}
-              onMultiDragMove={handleMultiDragMove}
-              onMultiDragEnd={handleMultiDragEnd} />
-          ))}
-        </Layer>
-
-        <Layer>
-          {arrows.map(a => (
-            <Group key={a.id} x={0} y={0}
-              draggable={tool === 'select'}
-              onDragEnd={e => {
-                const dx = e.target.x(), dy = e.target.y()
-                e.target.position({ x: 0, y: 0 })
-                onMoveArrow(a.id, dx, dy)
-              }}
-              onClick={e => { e.cancelBubble = true; if (e.evt.button !== 0) return; if (tool === 'delete') onRemoveArrow(a.id) }}
-              onMouseDown={e => {
-                e.cancelBubble = true
-                if (e.evt.button === 1) { e.evt.preventDefault(); onRemoveArrow(a.id) }
-              }}
-              onContextMenu={e => {
-                e.evt.preventDefault(); e.cancelBubble = true
-                if (!isPlaying) setContextMenu({ type: 'arrow', id: a.id, x: e.evt.clientX, y: e.evt.clientY,
-                  color: a.color ?? '#ff4444', dash: a.dash ?? false, strokeWidth: a.strokeWidth ?? 2.5, twoHeaded: a.twoHeaded ?? false })
-              }}
-            >
-              <Arrow
-                points={[a.x1, a.y1, a.x2, a.y2]}
-                stroke={a.color ?? '#ff4444'} fill={a.color ?? '#ff4444'}
-                strokeWidth={a.strokeWidth ?? 2.5}
-                pointerLength={12} pointerWidth={10}
-                dash={a.dash ? [10, 6] : undefined}
-                pointerAtBeginning={a.twoHeaded ?? false}
-                pointerAtEnd={true}
-              />
-            </Group>
-          ))}
-          {arrowStart && (
-            <Arrow
-              points={[arrowStart.x, arrowStart.y, mousePos.x, mousePos.y]}
-              stroke={arrowStyle?.color ?? '#ff6666'} fill={arrowStyle?.color ?? '#ff6666'}
-              strokeWidth={arrowStyle?.strokeWidth ?? 2}
-              pointerLength={12} pointerWidth={10}
-              dash={[6, 3]} listening={false}
-              pointerAtBeginning={arrowStyle?.twoHeaded ?? false}
-              pointerAtEnd={true}
-            />
-          )}
-        </Layer>
-
-        <Layer>
-          {(fieldEffects ?? []).map(fe => (
-            <FieldEffectElement key={fe.id} fe={fe}
-              tool={tool} isPlaying={isPlaying} effectTime={effectTime} playElapsedTime={playElapsedTime}
-              onMove={onMoveFieldEffect} onRemove={onRemoveFieldEffect}
-              onShowContextMenu={setContextMenu}
-              onHoverObject={obj => { hoveredObjectRef.current = obj; onObjectHover?.(obj) }}
-              onSnapDragMove={handleTokenDragMove} onSnapDragEnd={clearSnapLines}
-              groupRef={el => { if (el) fieldEffectGroupRefs.current[fe.id] = el; else delete fieldEffectGroupRefs.current[fe.id] }}
-              isMultiSelected={selectedAll.has(`field-effect:${fe.id}`)}
-              onMultiDragStart={handleMultiDragStart}
-              onMultiDragMove={handleMultiDragMove}
-              onMultiDragEnd={handleMultiDragEnd} />
-          ))}
-        </Layer>
-
-        {/* ── Trajectory paths — only the segments adjacent to the active frame ── */}
+        {/* ── Trajectory paths — behind the objects (segments adjacent to the active frame) ── */}
         {!isPlaying && (keyframes?.length ?? 0) > 1 && (
           <Layer listening={false}>
             {/* Boss trajectories */}
@@ -4041,31 +3957,137 @@ export default function RaidCanvas({
           </Layer>
         )}
 
+        {/* ── All draggable objects share ONE layer so left-click can bring any of
+            them above any other, regardless of type. rank = the default stacking
+            order; a left-clicked object is bumped on top for this session only. ── */}
         <Layer>
-          {Object.values(players).map(player => {
-            const pos           = positions[player.id] ?? { x: width / 2, y: height / 2 }
-            const isMulti       = selectedIds?.has(player.id) ?? false
-            const classOverride = keyframes?.[activeKeyframe]?._classOverrides?.[player.id] ?? null
-            return (
-              <PlayerMarker key={player.id} player={player} pos={pos} classOverride={classOverride}
-                isSelected={player.id === selectedId}
-                isMultiSelected={isMulti}
-                isPlaying={isPlaying} tool={tool} effectTime={effectTime}
-                onAction={handlePlayerAction}
-                groupRef={el => {
-                  if (el) playerGroupRefs.current[player.id] = el
-                  else delete playerGroupRefs.current[player.id]
-                }}
-                onDragStart={isMulti ? (pid, x, y) => handleMultiDragStart('player', pid, x, y) : null}
-                onDragMove={isMulti ? (e, pid) => handleMultiDragMove(e, 'player', pid) : null}
-                onDragEnd={e => onMovePlayer(player.id, e.target.x(), e.target.y())}
-                onDragEndMulti={(pid, x, y) => handleMultiDragEnd('player', pid, x, y)}
+          {(() => {
+            const stack = []
+            const zRank = (key, rank) => (zBumps[key] != null ? 1000 + zBumps[key] : rank)
+
+            ;(swirls ?? []).forEach(s => stack.push({ key: `swirl:${s.id}`, rank: 0, node: (
+              <SwirlOverlay key={`swirl:${s.id}`} swirl={s} swirlAngle={swirlAngle} beamLen={beamLen}
+                isPlaying={isPlaying} tool={tool} onMoveSwirl={onMoveSwirl} onRemoveSwirl={onRemoveSwirl}
+                onRaise={() => bringToFront(`swirl:${s.id}`)}
+                onContextMenu={(e, id) => { if (!isPlaying) setContextMenu({ type: 'swirl', id, x: e.evt.clientX, y: e.evt.clientY }) }} />
+            ) }))
+
+            ;(bosses ?? []).forEach(b => stack.push({ key: `boss:${b.id}`, rank: 1, node: (
+              <BossElement key={`boss:${b.id}`} boss={b} tool={tool} isPlaying={isPlaying} effectTime={effectTime}
+                onMoveBoss={onMoveBoss} onRemoveBoss={onRemoveBoss}
                 onShowContextMenu={handleShowContextMenu}
-                onSnapDragMove={handleTokenDragMove} onSnapDragEnd={clearSnapLines}
+                onRaise={() => bringToFront(`boss:${b.id}`)}
                 onHoverObject={obj => { hoveredObjectRef.current = obj; onObjectHover?.(obj) }}
-              />
-            )
-          })}
+                onSnapDragMove={handleTokenDragMove} onSnapDragEnd={clearSnapLines}
+                groupRef={el => { if (el) bossGroupRefs.current[b.id] = el; else delete bossGroupRefs.current[b.id] }}
+                isMultiSelected={selectedAll.has(`boss:${b.id}`)}
+                onMultiDragStart={handleMultiDragStart}
+                onMultiDragMove={handleMultiDragMove}
+                onMultiDragEnd={handleMultiDragEnd} />
+            ) }))
+
+            ;(markers ?? []).forEach(m => stack.push({ key: `marker:${m.id}`, rank: 2, node: (
+              <MarkerElement key={`marker:${m.id}`} marker={m}
+                isPlaying={isPlaying} tool={tool}
+                onMoveMarker={onMoveMarker} onRemoveMarker={onRemoveMarker}
+                onShowContextMenu={handleShowContextMenu}
+                onRaise={() => bringToFront(`marker:${m.id}`)}
+                onHoverObject={obj => { hoveredObjectRef.current = obj; onObjectHover?.(obj) }}
+                onSnapDragMove={handleTokenDragMove} onSnapDragEnd={clearSnapLines}
+                groupRef={el => { if (el) markerGroupRefs.current[m.id] = el; else delete markerGroupRefs.current[m.id] }}
+                isMultiSelected={selectedAll.has(`marker:${m.id}`)}
+                onMultiDragStart={handleMultiDragStart}
+                onMultiDragMove={handleMultiDragMove}
+                onMultiDragEnd={handleMultiDragEnd} />
+            ) }))
+
+            ;(arrows ?? []).forEach(a => stack.push({ key: `arrow:${a.id}`, rank: 3, node: (
+              <Group key={`arrow:${a.id}`} x={0} y={0}
+                draggable={tool === 'select'}
+                onDragEnd={e => {
+                  const dx = e.target.x(), dy = e.target.y()
+                  e.target.position({ x: 0, y: 0 })
+                  onMoveArrow(a.id, dx, dy)
+                }}
+                onClick={e => { e.cancelBubble = true; if (e.evt.button !== 0) return; if (tool === 'delete') onRemoveArrow(a.id) }}
+                onMouseDown={e => {
+                  e.cancelBubble = true
+                  if (e.evt.button === 0) bringToFront(`arrow:${a.id}`)
+                  if (e.evt.button === 1) { e.evt.preventDefault(); onRemoveArrow(a.id) }
+                }}
+                onContextMenu={e => {
+                  e.evt.preventDefault(); e.cancelBubble = true
+                  if (!isPlaying) setContextMenu({ type: 'arrow', id: a.id, x: e.evt.clientX, y: e.evt.clientY,
+                    color: a.color ?? '#ff4444', dash: a.dash ?? false, strokeWidth: a.strokeWidth ?? 2.5, twoHeaded: a.twoHeaded ?? false })
+                }}
+              >
+                <Arrow
+                  points={[a.x1, a.y1, a.x2, a.y2]}
+                  stroke={a.color ?? '#ff4444'} fill={a.color ?? '#ff4444'}
+                  strokeWidth={a.strokeWidth ?? 2.5}
+                  pointerLength={12} pointerWidth={10}
+                  dash={a.dash ? [10, 6] : undefined}
+                  pointerAtBeginning={a.twoHeaded ?? false}
+                  pointerAtEnd={true}
+                />
+              </Group>
+            ) }))
+
+            ;(fieldEffects ?? []).forEach(fe => stack.push({ key: `field-effect:${fe.id}`, rank: 4, node: (
+              <FieldEffectElement key={`field-effect:${fe.id}`} fe={fe}
+                tool={tool} isPlaying={isPlaying} effectTime={effectTime} playElapsedTime={playElapsedTime}
+                onMove={onMoveFieldEffect} onRemove={onRemoveFieldEffect}
+                onShowContextMenu={setContextMenu}
+                onRaise={() => bringToFront(`field-effect:${fe.id}`)}
+                onHoverObject={obj => { hoveredObjectRef.current = obj; onObjectHover?.(obj) }}
+                onSnapDragMove={handleTokenDragMove} onSnapDragEnd={clearSnapLines}
+                groupRef={el => { if (el) fieldEffectGroupRefs.current[fe.id] = el; else delete fieldEffectGroupRefs.current[fe.id] }}
+                isMultiSelected={selectedAll.has(`field-effect:${fe.id}`)}
+                onMultiDragStart={handleMultiDragStart}
+                onMultiDragMove={handleMultiDragMove}
+                onMultiDragEnd={handleMultiDragEnd} />
+            ) }))
+
+            Object.values(players).forEach(player => {
+              const pos           = positions[player.id] ?? { x: width / 2, y: height / 2 }
+              const isMulti       = selectedIds?.has(player.id) ?? false
+              const classOverride = keyframes?.[activeKeyframe]?._classOverrides?.[player.id] ?? null
+              stack.push({ key: `player:${player.id}`, rank: 5, node: (
+                <PlayerMarker key={`player:${player.id}`} player={player} pos={pos} classOverride={classOverride}
+                  isSelected={player.id === selectedId}
+                  isMultiSelected={isMulti}
+                  isPlaying={isPlaying} tool={tool} effectTime={effectTime}
+                  onAction={handlePlayerAction}
+                  onRaise={() => bringToFront(`player:${player.id}`)}
+                  groupRef={el => {
+                    if (el) playerGroupRefs.current[player.id] = el
+                    else delete playerGroupRefs.current[player.id]
+                  }}
+                  onDragStart={isMulti ? (pid, x, y) => handleMultiDragStart('player', pid, x, y) : null}
+                  onDragMove={isMulti ? (e, pid) => handleMultiDragMove(e, 'player', pid) : null}
+                  onDragEnd={e => onMovePlayer(player.id, e.target.x(), e.target.y())}
+                  onDragEndMulti={(pid, x, y) => handleMultiDragEnd('player', pid, x, y)}
+                  onShowContextMenu={handleShowContextMenu}
+                  onSnapDragMove={handleTokenDragMove} onSnapDragEnd={clearSnapLines}
+                  onHoverObject={obj => { hoveredObjectRef.current = obj; onObjectHover?.(obj) }}
+                />
+              ) })
+            })
+
+            stack.sort((a, b) => zRank(a.key, a.rank) - zRank(b.key, b.rank))
+            return stack.map(it => it.node)
+          })()}
+          {arrowStart && (
+            <Arrow
+              points={[arrowStart.x, arrowStart.y, mousePos.x, mousePos.y]}
+              stroke={arrowStyle?.color ?? '#ff6666'} fill={arrowStyle?.color ?? '#ff6666'}
+              strokeWidth={arrowStyle?.strokeWidth ?? 2}
+              pointerLength={12} pointerWidth={10}
+              dash={[6, 3]} listening={false}
+              pointerAtBeginning={arrowStyle?.twoHeaded ?? false}
+              pointerAtEnd={true}
+            />
+          )}
         </Layer>
 
         {spotlightPos && (
